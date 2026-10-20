@@ -8,3 +8,5 @@ id_*
 !*.pub
 *.pem
 *.txt.secret
+__pycache__/
+*.pyc
