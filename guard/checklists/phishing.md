@@ -19,10 +19,10 @@
 - [ ] Golpe “governo” no WhatsApp: órgãos não cobram por chat; sites `.gov.br` digitados (alerta CISC — ver nota 18h)
 - [ ] Gmail “This message could be a scam” de contato: não clicar; Report; avisar o amigo fora do e-mail
 
-## SMS / OTP / PIN SIM / Apple / Celular Seguro (2026-09-20)
+## SMS / OTP / PIN SIM / Apple / Celular Seguro (AAAA-MM-DD)
 
-**Nota:** `notes/2026-09-20-14-sms-otp-sim-pin-celular-seguro.md`  
-Fontes: CERT.br Autenticação + Celulares/Furto; Google answer/185839 + 7026266; GitHub Configuring/Changing 2FA; Apple 102568/120569/102560; Celular Seguro MJSP (acesso **2026-09-20**)
+**Nota:** `notes/<nota>.md`  
+Fontes: CERT.br Autenticação + Celulares/Furto; Google answer/185839 + 7026266; GitHub Configuring/Changing 2FA; Apple 102568/120569/102560; Celular Seguro MJSP (acesso **AAAA-MM-DD**)
 
 - [ ] Nunca enviar código SMS/OTP/2FA a ninguém (CERT.br Autenticação; Google; Apple; GitHub)
 - [ ] Google 2SV: preferir passkey → prompts / Authenticator; SMS só último recurso (SMS vulnerável a phone-number / SIM swap — answer/185839)
@@ -32,20 +32,20 @@ Fontes: CERT.br Autenticação + Celulares/Furto; Google answer/185839 + 7026266
 - [ ] Apple Account: checar se controla e-mail e número (SMS forwarding indevido) se suspeita (102560); trusted phone extra se iPhone único (122621)
 - [ ] Celular Seguro (`celularseguro.mj.gov.br` / gov.br): cadastrar aparelhos + Contato de Confiança **antes** do incidente
 - [ ] Furto/roubo: alerta Celular Seguro (protocolo) **e** BO — alerta não substitui BO; escolha Recuperação vs Bloqueio Total IMEI é irreversível após emitir
-- [ ] **NOVO** Pré-furto (CERT.br Furto `2026-09-21-15`): limites Pix/TED baixos; senhas só em gerenciador (não notas/fotos); pós = IR §24
+- [ ] **NOVO** Pré-furto (CERT.br Furto `<nota>`): limites Pix/TED baixos; senhas só em gerenciador (não notas/fotos); pós = IR §24
 
-## Apple Account (IR / phishing — 2026-09-20)
+## Apple Account (IR / phishing — AAAA-MM-DD)
 
-**Nota:** `notes/2026-09-20-18-apple-account-compromised-adp-recovery.md` · Apple 102568 / 102560
+**Nota:** `notes/<nota>.md` · Apple 102568 / 102560
 
 - [ ] Apple **nunca** pede senha, passcode, código 2FA, nem desligar 2FA / Stolen Device Protection
 - [ ] Código 2FA não pedido → possível tentativa; não digitar em site/ligação
 - [ ] <redacted-email> para SMS/e-mail falso (também nota SMS 14)
 
 
-## Pix MED / Recuperação de Valores (refresh 2026-09-20)
+## Pix MED / Recuperação de Valores (refresh AAAA-MM-DD)
 
-**Notas:** `2026-09-18-18-phishing-whatsapp-passkeys-med.md` · Guia BCB MED v4.3 (fetch 2026-09-20; v4.4 citada com vigências futuras 01/09 e 26/10/2026 — operacional consumidor ainda ancorado em 4.3)  
+**Notas:** `<nota>` · Guia BCB MED v4.3 (fetch AAAA-MM-DD; v4.4 citada com vigências futuras 01/09 e DD/MM/AAAA — operacional consumidor ainda ancorado em 4.3)  
 Fonte: [Guia_MED.pdf](https://www.bcb.gov.br/content/estabilidadefinanceira/pix/Guia_MED.pdf)
 
 - [ ] Golpe/fraude Pix: contestar **no app** (autoatendimento no ambiente Pix) ou canal do banco — **já**; PSP deve abrir Recuperação de Valores sem exigir BO para iniciar
@@ -55,10 +55,10 @@ Fonte: [Guia_MED.pdf](https://www.bcb.gov.br/content/estabilidadefinanceira/pix/
 - [ ] MED ≠ chargeback de cartão; devolução depende de saldo no recebedor + confirmação de fraude pelos PSPs
 - [ ] Se banco falhar: reclamar no RDR do BC (Manual Resolução de Disputas) — URL digitada
 
-## CISC / gov.br WhatsApp + 2FA operacional (refresh 2026-09-20)
+## CISC / gov.br WhatsApp + 2FA operacional (refresh AAAA-MM-DD)
 
-**Nota:** `notes/2026-09-20-23-cisc-govbr-whatsapp-2fa-ir.md`  
-Fontes: CISC alerta WhatsApp governo (13/02/2026, mod. 08/04/2026) · CTIR Rec. 01/2025 · gov.br Segurança da conta / Ativar 2FA / Recuperar 2FA e-mail · MJ Invadiram Gov.br (acesso **2026-09-20**)
+**Nota:** `notes/<nota>.md`  
+Fontes: CISC alerta WhatsApp governo (DD/MM/AAAA, mod. DD/MM/AAAA) · CTIR Rec. 01/2025 · gov.br Segurança da conta / Ativar 2FA / Recuperar 2FA e-mail · MJ Invadiram Gov.br (acesso **AAAA-MM-DD**)
 
 - [ ] Órgão **nunca** cobra / oferece benefício / ameaça bloqueio de CPF via WhatsApp (CISC)
 - [ ] Dados pessoais reais na mensagem (nome/CPF/endereço/familiares) **não** provam legitimidade
@@ -73,18 +73,18 @@ Fontes: CISC alerta WhatsApp governo (13/02/2026, mod. 08/04/2026) · CTIR Rec. 
 - [ ] Não remover app / trocar celular com 2FA on sem plano de recuperação (e-mail+facial ou formulário)
 - [ ] CTIR sinais: urgência, clone de site, PIX por serviço gratuito do governo, tema IR/Receita/Correios/Serasa
 
-## NOVOS (CERT.br IA / deepfake — 2026-09-21)
+## NOVOS (CERT.br IA / deepfake — AAAA-MM-DD)
 
-**Nota:** `notes/2026-09-21-02-certbr-notificacoes-ia-security-checkup.md` · [Fascículo IA](https://cartilha.cert.br/fasciculos/ia/fasciculo-ia.pdf) (acesso **2026-09-21**)
+**Nota:** `notes/<nota>.md` · [Fascículo IA](https://cartilha.cert.br/fasciculos/ia/fasciculo-ia.pdf) (acesso **AAAA-MM-DD**)
 
 - [ ] **NOVO** Deepfake áudio/vídeo pedindo dinheiro / urgência = suspeito até confirmar por canal oficial separado
 - [ ] **NOVO** Comprovante Pix / encomenda “gerado” = pode ser imagem IA; validar no app do banco / rastreio oficial digitado
 - [ ] **NOVO** Não colar senhas/códigos/PAT em prompts de IA ou agentes (assumir público)
 
-## CERT.br Banco + Comércio via Internet (2026-09-21)
+## CERT.br Banco + Comércio via Internet (AAAA-MM-DD)
 
-**Nota:** `notes/2026-09-21-04-certbr-banco-comercio-internet.md`  
-Fontes: [Fascículo Banco](https://cartilha.cert.br/fasciculos/banco-via-internet/fasciculo-banco-via-internet.pdf) (abr/2023) · [Fascículo Comércio](https://cartilha.cert.br/fasciculos/comercio-via-internet/fasciculo-comercio-via-internet.pdf) (nov/2023, IDV) · [índice](https://cartilha.cert.br/fasciculos/) (acesso **2026-09-21**)
+**Nota:** `notes/<nota>.md`  
+Fontes: [Fascículo Banco](https://cartilha.cert.br/fasciculos/banco-via-internet/fasciculo-banco-via-internet.pdf) (abr/2023) · [Fascículo Comércio](https://cartilha.cert.br/fasciculos/comercio-via-internet/fasciculo-comercio-via-internet.pdf) (nov/2023, IDV) · [índice](https://cartilha.cert.br/fasciculos/) (acesso **AAAA-MM-DD**)
 
 - [ ] **NOVO** Banco/instituição **não** pede senha, código, token, QR ou dados de cartão por ligação/WhatsApp/e-mail outbound — encerrar e usar canal oficial digitado
 - [ ] **NOVO** Limites PIX/TED/DOC/transferência reduzidos; rever crédito pré-aprovado
@@ -96,10 +96,10 @@ Fontes: [Fascículo Banco](https://cartilha.cert.br/fasciculos/banco-via-interne
 - [ ] **NOVO** Vender com Pix: só entregar após crédito na conta; comprar: conferir destinatário antes de confirmar
 - [ ] **NOVO** Disputa comércio: plataforma → Procon → BO (fascículo); fraude Pix → também MED (`§` Pix acima)
 
-## CERT.br trilogia Golpes (2026-09-21)
+## CERT.br trilogia Golpes (AAAA-MM-DD)
 
-**Nota:** `notes/2026-09-21-05-certbr-golpes-trilogia.md`  
-Fontes: [Não se Deixe Enganar](https://cartilha.cert.br/fasciculos/golpes/fasciculo-golpes.pdf) (mar/2026) · [Evite Fraudes](https://cartilha.cert.br/fasciculos/golpes-evite-fraudes/fasciculo-golpes-evite-fraudes.pdf) (mar/2026) · [Caiu?](https://cartilha.cert.br/fasciculos/golpes-o-que-fazer/fasciculo-golpes-o-que-fazer.pdf) (mai/2026) · [índice](https://cartilha.cert.br/fasciculos/) (acesso **2026-09-21**)
+**Nota:** `notes/<nota>.md`  
+Fontes: [Não se Deixe Enganar](https://cartilha.cert.br/fasciculos/golpes/fasciculo-golpes.pdf) (mar/2026) · [Evite Fraudes](https://cartilha.cert.br/fasciculos/golpes-evite-fraudes/fasciculo-golpes-evite-fraudes.pdf) (mar/2026) · [Caiu?](https://cartilha.cert.br/fasciculos/golpes-o-que-fazer/fasciculo-golpes-o-que-fazer.pdf) (mai/2026) · [índice](https://cartilha.cert.br/fasciculos/) (acesso **AAAA-MM-DD**)
 
 ### Identificar (Não se Deixe Enganar)
 - [ ] **NOVO** Triagem: conhecido/org? dinheiro/vantagem/dados? urgência sem pensar? → alerta
@@ -125,10 +125,10 @@ Fontes: [Não se Deixe Enganar](https://cartilha.cert.br/fasciculos/golpes/fasci
 - [ ] Monitorar Registrato + score + sessões após o incidente
 
 
-## CERT.br Boatos + golpes via desinformação (2026-09-21)
+## CERT.br Boatos + golpes via desinformação (AAAA-MM-DD)
 
-**Nota:** `notes/2026-09-21-06-certbr-boatos-vazamento-privacidade.md`  
-Fontes: [Boatos](https://cartilha.cert.br/fasciculos/boatos/fasciculo-boatos.pdf) (jul/2024) · [índice](https://cartilha.cert.br/fasciculos/) (acesso **2026-09-21**)
+**Nota:** `notes/<nota>.md`  
+Fontes: [Boatos](https://cartilha.cert.br/fasciculos/boatos/fasciculo-boatos.pdf) (jul/2024) · [índice](https://cartilha.cert.br/fasciculos/) (acesso **AAAA-MM-DD**)
 
 - [ ] **NOVO** Antes de crer/repassar: título alarmista + “compartilhe” + fonte omitida/desconhecida + data ausente/antiga = cara de boato
 - [ ] **NOVO** Ir à fonte original (site/perfil oficial digitado); ler na origem; procurar desmentido/comunicado
@@ -139,10 +139,10 @@ Fontes: [Boatos](https://cartilha.cert.br/fasciculos/boatos/fasciculo-boatos.pdf
 - [ ] Denunciar contas falsas/bots; não aceitar amizade/seguir perfil duvidoso (ajuda a legitimá-lo)
 - [ ] Contas usadas para repasse (e-mail/redes): 2SV + alertas de login; senhas não reutilizadas
 
-## CERT.br Redes Sociais (2026-09-21)
+## CERT.br Redes Sociais (AAAA-MM-DD)
 
-**Nota:** `notes/2026-09-21-08-certbr-redes-sociais.md`  
-Fonte: [Redes Sociais](https://cartilha.cert.br/fasciculos/redes-sociais/fasciculo-redes-sociais.pdf) (fev/2023) · [índice](https://cartilha.cert.br/fasciculos/) (acesso **2026-09-21**)
+**Nota:** `notes/<nota>.md`  
+Fonte: [Redes Sociais](https://cartilha.cert.br/fasciculos/redes-sociais/fasciculo-redes-sociais.pdf) (fev/2023) · [índice](https://cartilha.cert.br/fasciculos/) (acesso **AAAA-MM-DD**)
 
 - [ ] **NOVO** Conta privada quando a plataforma permitir; verificar identidade antes de aceitar seguidor/amigo; bloquear falsos
 - [ ] **NOVO** Perfil: não publicar telefone/PII; ajustar público-alvo das infos do perfil
@@ -154,10 +154,10 @@ Fonte: [Redes Sociais](https://cartilha.cert.br/fasciculos/redes-sociais/fascicu
 - [ ] Takeover: ver `resposta-incidente.md` §20
 
 
-## CERT.br Códigos Maliciosos (2026-09-21)
+## CERT.br Códigos Maliciosos (AAAA-MM-DD)
 
-**Nota:** `notes/2026-09-21-10-certbr-codigos-maliciosos.md`  
-Fonte: [Códigos Maliciosos](https://cartilha.cert.br/fasciculos/codigos-maliciosos/fasciculo-codigos-maliciosos.pdf) (jul/2023) · [índice](https://cartilha.cert.br/fasciculos/) (acesso **2026-09-21**)
+**Nota:** `notes/<nota>.md`  
+Fonte: [Códigos Maliciosos](https://cartilha.cert.br/fasciculos/codigos-maliciosos/fasciculo-codigos-maliciosos.pdf) (jul/2023) · [índice](https://cartilha.cert.br/fasciculos/) (acesso **AAAA-MM-DD**)
 
 - [ ] **NOVO** Links: contexto + detalhes; dúvida = não clicar; “conhecido” → confirmar por outro canal
 - [ ] **NOVO** Anexos: scan AV antes; dúvida = não abrir
@@ -167,9 +167,9 @@ Fonte: [Códigos Maliciosos](https://cartilha.cert.br/fasciculos/codigos-malicio
 - [ ] Pós-golpe com app do golpista: já em § Golpes / IR §18 (factory reset)
 
 
-## CERT.br Trabalho Remoto — e-mail / canais (2026-09-21)
+## CERT.br Trabalho Remoto — e-mail / canais (AAAA-MM-DD)
 
-**Nota:** `notes/2026-09-21-13-certbr-trabalho-remoto.md`
+**Nota:** `notes/<nota>.md`
 
 - [ ] **NOVO** Links/anexos: ignorar se fora do trabalho / ameaça / oferta / fora do procedimento usual
 - [ ] **NOVO** Na dúvida: confirmar autor por **outro canal**; pedir ajuda ao security da org (se houver)

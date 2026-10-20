@@ -1,6 +1,5 @@
 # Checklist — resposta a incidente caseira (Trilha 7)
 
-**Atualizado:** 2026-09-21 ~11:22 BRT (+ CERT.br Furto de Celular `2026-09-21-15`)
 
 Playbook sob suspeita de takeover / credencial vazada. Higiene contínua: `identidade-conta.md` + `github-scm.md`. Bridge desmontada: sem afirmar estado remoto do dispositivo Android.
 
@@ -34,7 +33,6 @@ Playbook sob suspeita de takeover / credencial vazada. Higiene contínua: `ident
 - [ ] E-mails verificados da conta sob seu controle; 2FA/passkey + recovery codes offline
 
 ## 4. Android / device (só se perdido, roubado ou sob terceiro — docs oficiais)
-**Nota refresh:** `notes/2026-09-20-26-android-find-hub-theft-protection-refresh.md` (Help 6160491 / 3265955 / 15146908)
 - [ ] **Primeiro (rápido):** Remote Lock em android.com/lock — número verificado + CAPTCHA (+ security answer se configurada); máx **2/24h**; unlock só local (15146908)
 - [ ] Find Hub (app / android.com/find / Guest Mode): locate / Play sound / **Mark as lost** / Factory reset — device online + Find Hub on + visível no Google Play (6160491)
 - [ ] Mark as lost Android **17+** 2SV (PIN+biometria) = horizonte; dispositivo Android=15 → Mark as lost clássico
@@ -79,7 +77,6 @@ Playbook sob suspeita de takeover / credencial vazada. Higiene contínua: `ident
 - [ ] Machine key não rotaciona (docs); instalação suspeita → Remove + reinstall/reauth em host limpo
 
 ## 10. Denúncia / canais BR
-**Refresh:** `notes/2026-09-21-02-certbr-notificacoes-ia-security-checkup.md` · notificações **v1.4** (14/11/2025) · PGP 2026 (acesso **2026-09-21**)
 - [ ] Incidente técnico BR: e-mail `<redacted-email>` com evidências + data/hora/**timezone**; preferir notificar abuse da rede de origem com CERT.br em **Cc** — **sem formulário** (cert.br/reportar/)
 - [ ] Spam em massa: **só** `<redacted-email>` (cert.br/docs/notificacoes/)
 - [ ] Phishing em domínio **malicioso**/lookalike: **não** usar contact WHOIS do domínio (fraudador) — abuse AS/IP + Registrar (notificações §3)
@@ -96,10 +93,10 @@ Playbook sob suspeita de takeover / credencial vazada. Higiene contínua: `ident
 - [ ] Recusar push 2SV / aprovações que você não iniciou (CERT.br fascículo)
 - [ ] NCSC: não usar links de mensagens; contatos avisados; extratos banco/Play
 
-## 12. Celular Seguro / PIN SIM (furto-roubo BR — 2026-09-20; Furto CERT.br 2026-09-21)
+## 12. Celular Seguro / PIN SIM (furto-roubo BR — AAAA-MM-DD; Furto CERT.br AAAA-MM-DD)
 
-**Notas:** `notes/2026-09-20-14-sms-otp-sim-pin-celular-seguro.md` · **`notes/2026-09-21-15-certbr-furto-de-celular.md`**  
-Fontes: celularseguro.mj.gov.br · CERT.br Furto de Celular PDF (nov/2024; acesso **2026-09-21**) · android.com/lock · android.com/find
+**Notas:** `notes/<nota>.md` · **`notes/<nota>.md`**  
+Fontes: celularseguro.mj.gov.br · CERT.br Furto de Celular PDF (nov/2024; acesso **AAAA-MM-DD**) · android.com/lock · android.com/find
 
 - [ ] Pré: aparelhos + Contato de Confiança cadastrados no Celular Seguro (gov.br)
 - [ ] Furto/roubo: emitir alerta (você ou Contato de Confiança); guardar **protocolo**
@@ -111,10 +108,10 @@ Fontes: celularseguro.mj.gov.br · CERT.br Furto de Celular PDF (nov/2024; acess
 - [ ] PIN SIM: se aparelho ainda sob seu controle antes do furto, confirmar PIN ativo + PIN padrão alterado (CERT.br); sem UI não marcar
 - [ ] Playbook completo pré+pós: ver **§24**
 
-## 13. Contenção GitHub IR profunda (unauthorized / 2FA lockout — 2026-09-20)
+## 13. Contenção GitHub IR profunda (unauthorized / 2FA lockout — AAAA-MM-DD)
 
-**Nota:** `notes/2026-09-20-17-github-unauthorized-access-2fa-recovery.md`  
-Fontes: docs.github.com Preventing unauthorized access · Sessions · Updating credentials · Revoking your credentials · REST `/credentials/revoke` · Recovering 2FA · Account Recovery Policy (acesso **2026-09-20**)
+**Nota:** `notes/<nota>.md`  
+Fontes: docs.github.com Preventing unauthorized access · Sessions · Updating credentials · Revoking your credentials · REST `/credentials/revoke` · Recovering 2FA · Account Recovery Policy (acesso **AAAA-MM-DD**)
 
 ### Com acesso (signed-in)
 - [ ] Senha GitHub nova e única (Password and authentication / password_reset)
@@ -131,7 +128,7 @@ Fontes: docs.github.com Preventing unauthorized access · Sessions · Updating c
 - [ ] `POST https://api.github.com/credentials/revoke` **sem** Authorization (auth → 403); body `credentials[]` ≤1000; rate 60/h
 - [ ] Tipos: `ghp_` / `github_pat_` / `gho_` / `ghu_` / `ghr_` — **não** `ghs_` (short-lived App/Actions)
 - [ ] Após revoke: gerar novo → atualizar secrets/automations → confirmar log/UI (não reativa)
-- [ ] Push protection / leak: público/gist pode já ter auto-revogado PAT/OAuth/App — ainda assim inventariar stores + Security log (nota `2026-09-26-10-…` / auth §O)
+- [ ] Push protection / leak: público/gist pode já ter auto-revogado PAT/OAuth/App — ainda assim inventariar stores + Security log (nota `<nota>` / auth §O)
 - [ ] Privado PAT: *Report leak* no alerta (preview) após rotacionar se downtime preocupa; Close as Revoked manual
 
 ### Bulk Danger zone (Credentials)
@@ -145,10 +142,10 @@ Fontes: docs.github.com Preventing unauthorized access · Sessions · Updating c
 - [ ] Sem recovery = perda permanente; unlink e-mail para nova/outra conta; conteúdo privado locked ≠ recuperável por Support
 - [ ] Ignorar “serviços recovery” / social engineering pedindo ID — política explícita
 
-## 14. Contenção Apple Account / iPhone (IR — 2026-09-20)
+## 14. Contenção Apple Account / iPhone (IR — AAAA-MM-DD)
 
-**Nota:** `notes/2026-09-20-18-apple-account-compromised-adp-recovery.md`  
-Fontes: support.apple.com/102560 · 118574 · 102568 · 122621 · 102651 (acesso **2026-09-20**)
+**Nota:** `notes/<nota>.md`  
+Fontes: support.apple.com/102560 · 118574 · 102568 · 122621 · 102651 (acesso **AAAA-MM-DD**)
 
 - [ ] Sinais: notificação Apple, 2FA não pedido, devices/trusted/purchases estranhos, senha falha, Lost Mode por terceiro
 - [ ] Change/reset senha Apple Account; `account.apple.com` corrigir info; **Devices** remove estranhos
@@ -156,14 +153,14 @@ Fontes: support.apple.com/102560 · 118574 · 102568 · 122621 · 102651 (acesso
 - [ ] Sem reset: `iforgot.apple.com` account recovery (dias; Support não encurta; outros devices signed-in cancelam wait)
 - [ ] Pós: 2FA; Security Keys; passcode + Stolen Device Protection; ≥2 trusted phones/devices
 - [ ] Apple **nunca** pede senha/código/passcode nem desligar 2FA/SDP (102568)
-- [ ] ADP: trade-off E2E vs recovery; recovery contact/key **antes** de ligar; estado ADP Bruno = NÃO VALIDADO sem UI
+- [ ] ADP: trade-off E2E vs recovery; recovery contact/key **antes** de ligar; estado ADP o dono = NÃO VALIDADO sem UI
 - [ ] Furto físico BR: Celular Seguro + BO (§12) **e** Find My se aplicável — não substituem um ao outro
 - [ ] Sem UI Apple: **não** marcar itens acima como feitos
 
-## 15. Contenção Google — passkeys / at-risk / recovery residual (2026-09-20)
+## 15. Contenção Google — passkeys / at-risk / recovery residual (AAAA-MM-DD)
 
-**Nota:** `notes/2026-09-20-19-google-passkeys-at-risk-recovery.md`  
-Fontes: support.google.com/accounts 13548313 · 17137073 · 183723 · 7682439 · 6294825 (acesso **2026-09-20**)
+**Nota:** `notes/<nota>.md`  
+Fontes: support.google.com/accounts 13548313 · 17137073 · 183723 · 7682439 · 6294825 (acesso **AAAA-MM-DD**)
 
 ### Com acesso
 - [ ] Passkeys and security keys: Remove de device perdido/compartilhado / não reconhecido
@@ -179,10 +176,10 @@ Fontes: support.google.com/accounts 13548313 · 17137073 · 183723 · 7682439 ·
 - [ ] **Não** ligar “Google support” / **não** pagar serviço recovery / **não** enviar senha ou códigos
 - [ ] Sem UI: não marcar itens como feitos
 
-## 16. Contenção conta gov.br (IR — 2026-09-20)
+## 16. Contenção conta gov.br (IR — AAAA-MM-DD)
 
-**Nota:** `notes/2026-09-20-23-cisc-govbr-whatsapp-2fa-ir.md`  
-Fontes: MJ Invadiram Gov.br · gov.br Segurança da conta / Ativar 2FA / Recuperar 2FA (acesso **2026-09-20**)
+**Nota:** `notes/<nota>.md`  
+Fontes: MJ Invadiram Gov.br · gov.br Segurança da conta / Ativar 2FA / Recuperar 2FA (acesso **AAAA-MM-DD**)
 
 - [ ] BO (presencial ou delegacia virtual) + evidências (prints, data/hora) — MJ passo 1
 - [ ] Senha nova no portal oficial de recuperação (**digitado**); “Esqueci minha senha” se bloqueado; suporte gov.br se falhar
@@ -195,10 +192,10 @@ Fontes: MJ Invadiram Gov.br · gov.br Segurança da conta / Ativar 2FA / Recuper
 - [ ] Código 2FA gov.br pedido por SMS/WhatsApp = golpe (código real só no app)
 - [ ] Sem UI: **não** marcar itens como feitos no dispositivo Android
 
-## 17. CERT.br IA / agentes + Security Checkup residual (2026-09-21)
+## 17. CERT.br IA / agentes + Security Checkup residual (AAAA-MM-DD)
 
-**Nota:** `notes/2026-09-21-02-certbr-notificacoes-ia-security-checkup.md`  
-Fontes: cartilha.cert.br Fascículo IA · support.google.com/accounts 12629482 · 46526 (acesso **2026-09-21**)
+**Nota:** `notes/<nota>.md`  
+Fontes: cartilha.cert.br Fascículo IA · support.google.com/accounts 12629482 · 46526 (acesso **AAAA-MM-DD**)
 
 ### Agentes / IA (fascículo CERT.br)
 - [ ] Permissão mínima: sem escrita se a tarefa é só leitura; sem senhas/cartão/docs no prompt ou histórico do agente
@@ -213,8 +210,8 @@ Fontes: cartilha.cert.br Fascículo IA · support.google.com/accounts 12629482 �
 - [ ] Password Checkup + Password Alert (Chrome); remover apps/extensões desnecessárias
 - [ ] Sem myaccount UI: **não** marcar itens como feitos
 
-## 18. Pós-golpe CERT.br (trilogia Golpes — 2026-09-21)
-**Nota:** `notes/2026-09-21-05-certbr-golpes-trilogia.md` · fascículo Caiu? (mai/2026)
+## 18. Pós-golpe CERT.br (trilogia Golpes — AAAA-MM-DD)
+**Nota:** `notes/<nota>.md` · fascículo Caiu? (mai/2026)
 
 - [ ] Cortar contato: bloquear; sem negociar; sem mais dinheiro/dados
 - [ ] Senhas em todas as contas reutilizadas; 2SV; recusar push não iniciado; encerrar sessões
@@ -230,8 +227,8 @@ Fontes: cartilha.cert.br Fascículo IA · support.google.com/accounts 12629482 �
 - [ ] Monitorar: alertas, extratos, sessões, score, Registrato (`registrato.bcb.gov.br`)
 
 
-## 19. Vazamento de Dados (terceiro / CERT.br — 2026-09-21)
-**Nota:** `notes/2026-09-21-06-…` · `notes/2026-09-21-07-…` (Proteção de Dados / LGPD) · fascículos Vazamento + Proteção (jan/2024, ANPD)
+## 19. Vazamento de Dados (terceiro / CERT.br — AAAA-MM-DD)
+**Nota:** `notes/<nota>.md` · `notes/<nota>.md` (Proteção de Dados / LGPD) · fascículos Vazamento + Proteção (jan/2024, ANPD)
 
 - [ ] **NOVO** Comunicado de vazamento: confirmar só por **canal oficial digitado** (e-mail/SMS com link = possível golpe paralelo)
 - [ ] Entender: quais dados, quando, mitigações da empresa; executar mitigações oficiais
@@ -240,13 +237,13 @@ Fontes: cartilha.cert.br Fascículo IA · support.google.com/accounts 12629482 �
 - [ ] **NOVO** Monitorar: alertas · extratos · [Registrato](https://registrato.bcb.gov.br/) · score · [Cadastro Pré-Pago](https://cadastropre.com.br/) (linha no CPF)
 - [ ] Pós-vazamento: alerta a phishing/extorsão/perfil falso; avisar contatos se perfil falso
 - [ ] BO se furto de identidade / prejuízo financeiro / extorsão
-- [ ] Sem resposta do Controlador (ou Controlador desconhecido): ANPD — **petição de Titular** (exercer direitos) **ou** **denúncia** (infração LGPD quando petição não couber) ([canais titular](https://gov.br/anpd/pt-br/canais_atendimento/cidadao-titular-de-dados/)); ver também nota `2026-09-21-07-…` (Proteção de Dados)
+- [ ] Sem resposta do Controlador (ou Controlador desconhecido): ANPD — **petição de Titular** (exercer direitos) **ou** **denúncia** (infração LGPD quando petição não couber) ([canais titular](https://gov.br/anpd/pt-br/canais_atendimento/cidadao-titular-de-dados/)); ver também nota `<nota>` (Proteção de Dados)
 - [ ] **NOVO** Nunca comprar dados vazados; nunca abrir site/arquivo duvidoso que “confirma se vazou”
 - [ ] Furto fino (já §12): pin screen (Fixação/Acesso Guiado) em via pública; desabilitar atalhos/leitura na lock screen; limites Pix/TED reduzidos preventivamente
 
-## 20. Takeover / clone de rede social (CERT.br — 2026-09-21)
+## 20. Takeover / clone de rede social (CERT.br — AAAA-MM-DD)
 
-**Nota:** `notes/2026-09-21-08-certbr-redes-sociais.md` · fascículo Redes Sociais (fev/2023)
+**Nota:** `notes/<nota>.md` · fascículo Redes Sociais (fev/2023)
 
 - [ ] **NOVO** Trocar senha imediatamente no site/app **oficial** (digitado / loja); ativar ou reforçar 2SV
 - [ ] **NOVO** Seguir fluxo oficial de recuperação se sem acesso (e-mail/telefone de recovery sob seu controle)
@@ -257,9 +254,9 @@ Fontes: cartilha.cert.br Fascículo IA · support.google.com/accounts 12629482 �
 - [ ] Sem UI: **não** marcar itens como feitos
 
 
-## 21. Perda de 2º fator / alerta de login indevido (CERT.br Autenticação — 2026-09-21)
+## 21. Perda de 2º fator / alerta de login indevido (CERT.br Autenticação — AAAA-MM-DD)
 
-**Nota:** `notes/2026-09-21-09-certbr-autenticacao.md` · fascículo Autenticação (nov/2022)
+**Nota:** `notes/<nota>.md` · fascículo Autenticação (nov/2022)
 
 - [ ] **NOVO** Alerta de login indevido: acessar conta pela URL **digitada** (nunca link do alerta) → alterar senha → ativar/reforçar 2SV → encerrar sessões
 - [ ] **NOVO** Negar push/autorização 2SV que você não iniciou; tratar como tentativa ativa
@@ -271,9 +268,9 @@ Fontes: cartilha.cert.br Fascículo IA · support.google.com/accounts 12629482 �
 - [ ] Sem UI: **não** marcar itens como feitos
 
 
-## 22. Suspeita de malware / Códigos Maliciosos (CERT.br — 2026-09-21)
+## 22. Suspeita de malware / Códigos Maliciosos (CERT.br — AAAA-MM-DD)
 
-**Nota:** `notes/2026-09-21-10-certbr-codigos-maliciosos.md` · fascículo Códigos Maliciosos (jul/2023)  
+**Nota:** `notes/<nota>.md` · fascículo Códigos Maliciosos (jul/2023)  
 Cruzar §18 se o vetor foi golpe/app indicado.
 
 - [ ] **NOVO** AV local ou online no device suspeito; anotar sintomas (lentidão, popups, cifragem, spam outbound)
@@ -283,25 +280,25 @@ Cruzar §18 se o vetor foi golpe/app indicado.
 - [ ] Scareware: não instalar o “antivírus” do popup; limpar com AV conhecido
 - [ ] Stalkerware: evidência + reset + senhas; considerar ajuda externa se risco pessoal
 - [ ] Ransomware: **não** tipar pagamento; backups offline; evidência/BO se prejuízo
-- [ ] Roteador/ISP estranho após reboot: ver higiene CERT.br Redes (`2026-09-21-11`) + trocar admin/Wi‑Fi
+- [ ] Roteador/ISP estranho após reboot: ver higiene CERT.br Redes (`<nota>`) + trocar admin/Wi‑Fi
 - [ ] Sem bridge/UI: **não** afirmar infecção no dispositivo Android
 
 
-## 23. PC/Mac — malware / furto / manutenção (CERT.br Computadores — 2026-09-21)
+## 23. PC/Mac — malware / furto / manutenção (CERT.br Computadores — AAAA-MM-DD)
 
-**Nota:** `notes/2026-09-21-12-certbr-computadores.md` · fascículo Computadores (abril/2024)  
-Cruzar §22 (malware geral) · Backup `2026-09-21-14` · Trabalho Remoto `2026-09-21-13`
+**Nota:** `notes/<nota>.md` · fascículo Computadores (abril/2024)  
+Cruzar §22 (malware geral) · Backup `<nota>` · Trabalho Remoto `<nota>`
 
 - [ ] **NOVO** Suspeita no PC: AV nativo/preferido → se persiste: reinstalar SO → trocar senhas em **outro device seguro** (ou só após limpeza)
 - [ ] **NOVO** Furto/perda PC: Find My / account.microsoft.com/devices → bloquear/apagar remoto → BO
 - [ ] **NOVO** Manutenção: backup antes; SO original; disco antigo apagar ou reter (cifrado = ok deixar); pós: updates/AV/firewall ativos
 - [ ] **NOVO** Ransomware: backups **offline desconectados**; não tipar pagamento; cruzar §22
-- [ ] Trabalho Remoto (se employer): notificar canais oficiais de suporte/segurança da empresa (`2026-09-21-13`)
+- [ ] Trabalho Remoto (se employer): notificar canais oficiais de suporte/segurança da empresa (`<nota>`)
 - [ ] Sem UI Mac: **não** afirmar infecção/estado FileVault
 
-## 24. Furto de celular — playbook CERT.br (pré + pós — 2026-09-21)
+## 24. Furto de celular — playbook CERT.br (pré + pós — AAAA-MM-DD)
 
-**Nota:** `notes/2026-09-21-15-certbr-furto-de-celular.md` · fascículo Furto de Celular (nov/2024)  
+**Nota:** `notes/<nota>.md` · fascículo Furto de Celular (nov/2024)  
 Cruzar §4 (Find Hub) · §12 (Celular Seguro) · `android-higiene.md` (pré)
 
 ### Pré (reduzir dano)

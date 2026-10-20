@@ -1,11 +1,11 @@
 # netmon — monitor de rede do Nexo (somente leitura)
 
-Script: `/home/box/agent-data/nexo/ops/netmon/netmon.sh` (bash; usa `jq`, `dig`, `ss`, `curl`, `sudo -n`, `ssh`).
+Script: `~/nexo/ops/netmon/netmon.sh` (bash; usa `jq`, `dig`, `ss`, `curl`, `sudo -n`, `ssh`).
 
 ```bash
-/home/box/agent-data/nexo/ops/netmon/netmon.sh               # saída vazia = tudo normal
-/home/box/agent-data/nexo/ops/netmon/netmon.sh --verbose     # + resumo completo de cada verificação
-/home/box/agent-data/nexo/ops/netmon/netmon.sh --rebaseline  # aceita o estado atual como novo "normal"
+~/nexo/ops/netmon/netmon.sh               # saída vazia = tudo normal
+~/nexo/ops/netmon/netmon.sh --verbose     # + resumo completo de cada verificação
+~/nexo/ops/netmon/netmon.sh --rebaseline  # aceita o estado atual como novo "normal"
 ```
 
 Termina com código 0. Se algo falhar, termina com código **2** e uma linha `[ERRO]` (veja "Gravação segura do estado"). Só imprime mudanças/alertas, com as etiquetas `[ALERTA]`, `[HEURÍSTICA]` e `[INFO]`.
@@ -28,9 +28,9 @@ Nenhum arquivo guarda senha. A senha do AdGuard é lida de `../secrets/adguard-a
 ## Verificações
 
 ### 1. Saúde do box
-- VPN `Running`, nó `nexo-box` com IP `<VPN_IP_PC>`.
+- VPN `Running`, nó `servidor` com IP `<VPN_IP_PC>`.
 - Firewall: a 1ª regra `-A` do INPUT em **iptables e ip6tables** tem de ser `-A INPUT -i vpn0 -j nexo-ts-guard`. A cadeia `nexo-ts-guard` e o INPUT inteiro são comparados com a baseline.
-  Se algo mudar, o script avisa e mostra o comando para reaplicar: `sh /home/box/agent-data/nexo/ops/nexo-ts-guard.sh`. **Ele nunca roda esse comando sozinho.**
+  Se algo mudar, o script avisa e mostra o comando para reaplicar: `sh ~/nexo/ops/nexo-ts-guard.sh`. **Ele nunca roda esse comando sozinho.**
 - AdGuard Home: o pid de `/run/adguardhome.pid` tem de estar vivo, o binário tem de ser `/opt/AdGuardHome/AdGuardHome` e ele só pode escutar em
   `<VPN_IP_PC>:53` (tcp+udp) e `<VPN_IP_PC>:3000`. Também alerta se outro processo ocupar a porta 53 ou 3000.
 - DNS: `dig @<VPN_IP_PC> example.com` tem de resolver para um IPv4 real, e `doubleclick.net` tem de voltar `0.0.0.0`.
@@ -48,7 +48,7 @@ Lista os peers com nome, IP, SO, se estão online e o tipo de conexão (direta o
 - Alerta de **pico**: taxa por hora acima de 3× a baseline. Há pisos mínimos (30 consultas/h e 10 bloqueios/h, além de ≥50 consultas ou ≥20 bloqueios na janela) para não disparar com volumes muito baixos.
 - `[HEURÍSTICA]` consultas a DNS dinâmico, túneis e stalkerware conhecidos (duckdns, no-ip, ddns.net, hopto, zapto, dynu, afraid, ngrok*, trycloudflare, serveo, mSpy, FlexiSpy, Hoverwatch etc.). Isso é **só um indício**: pode ser uso legítimo.
 
-### 4. dispositivo Android via SSH (`ssh -i ~/.ssh/nexo_box_to_android -p 8022 <VPN_IP_ANDROID>`, BatchMode, timeout de 10 s)
+### 4. dispositivo Android via SSH (`ssh -i ~/.ssh/id_ed25519_android -p 8022 <VPN_IP_ANDROID>`, BatchMode, timeout de 10 s)
 Usa uma única conexão. Se falhar, tenta de novo **uma** vez (só em erro de conexão) e então mostra `dispositivo Android offline/inacessível`.
 Coleta: sha256 de `~/.ssh/authorized_keys` e de `$PREFIX/etc/ssh/sshd_config`, se o sshd está rodando, portas em escuta,
 interfaces/IPs (`ifconfig`), tipo de rede (`wlan*` = wifi; `rmnet*`/`ccmni*`/`seth_lte*` = dados móveis), quantos pacotes do terminal Android têm atualização
@@ -65,7 +65,7 @@ interfaces/IPs (`ifconfig`), tipo de rede (`wlan*` = wifi; `rmnet*`/`ccmni*`/`se
 ## Como refazer a baseline
 Depois de uma mudança legítima (app instalado, sshd endurecido, aparelho novo na rede VPN ou no Wi-Fi):
 ```bash
-/home/box/agent-data/nexo/ops/netmon/netmon.sh --rebaseline
+~/nexo/ops/netmon/netmon.sh --rebaseline
 ```
 Partes que não puderem ser coletadas na hora (dispositivo Android offline, ou dispositivo Android fora do Wi-Fi) **mantêm** a baseline anterior.
 Se não houver baseline para o dispositivo Android, o Wi-Fi ou o AdGuard, ela é criada automaticamente na 1ª coleta boa, com um aviso `[INFO]`.
@@ -80,17 +80,17 @@ Se não houver baseline para o dispositivo Android, o Wi-Fi ou o AdGuard, ela é
 - Itens comparados com a baseline continuam alertando a cada execução até o `--rebaseline`. Isso é proposital, para alertas de segurança não sumirem.
 - O teste DNS usa a rede real (upstreams 1.1.1.1/1.0.0.1). Uma queda de internet do box aparece como falha de `example.com`.
 
-## Saída JSON (`--json`, adicionada em 04/10/2026 para o dashboard)
+## Saída JSON (`--json`, adicionada em DD/MM/AAAA para o dashboard)
 ```bash
-NETMON_NO_APT_UPDATE=1 /home/box/agent-data/nexo/ops/netmon/netmon.sh --json
+NETMON_NO_APT_UPDATE=1 ~/nexo/ops/netmon/netmon.sh --json
 ```
 Faz exatamente a mesma coleta, comparação, log e atualização de `state/last.json` de uma execução normal, mas em vez do texto imprime
 **um** objeto JSON: `{ok, snapshot, alerts:[{level,text}], summary:[...], baseline_file, log_file}` (`level` = `ALERTA`, `HEURÍSTICA` ou `INFO`).
 Em caso de trava ocupada imprime `{"ok":false,"error":"..."}`. É usado por `../dashboard/dashboard.sh`.
 Como é uma execução normal, as contagens "desde a última execução" e os alertas de online/offline passam a contar a partir dela.
-Backup do script antes desta mudança: `netmon.sh.bak-20261004-antes-json`.
+Backup do script antes desta mudança: `netmon.sh.bak-AAAAMMDD-antes-json`.
 
-## Gravação segura do estado (04/10/2026)
+## Gravação segura do estado (DD/MM/AAAA)
 Motivo: em 04/10 o querylog do AdGuard passou de 128 KB e estourou o limite de argumento do `jq --argjson`. O script seguiu sem perceber,
 gravou `state/last.json` e depois `baseline.json` com 1 byte e ainda imprimiu "Baseline regravada".
 - **Escrita atômica e validada:** `baseline.json`, `state/baseline.prev.json`, `state/last.json` e `state/android_apt_update.date` são escritos primeiro num temporário
@@ -108,4 +108,4 @@ gravou `state/last.json` e depois `baseline.json` com 1 byte e ainda imprimiu "B
 - **AdGuard e dispositivo Android degradam sem abortar:** se o processamento da resposta deles falhar, a execução segue com `[ALERTA] AdGuard API inacessível (…)` ou `dispositivo Android … (falha ao processar …)`.
 - **Teste de falha:** foi feito numa cópia do script em `/tmp`, com `BASE` trocado e um `jq` falso no PATH que falha ou devolve lixo numa chamada específica.
   Em todos os casos o `baseline.json` e o `state/` ficaram iguais e não sobrou temporário.
-- Backups do script: `netmon.sh.bak-20261004-antes-argmax` e `netmon.sh.bak-20261004-antes-atomic`.
+- Backups do script: `netmon.sh.bak-AAAAMMDD-antes-argmax` e `netmon.sh.bak-AAAAMMDD-antes-atomic`.

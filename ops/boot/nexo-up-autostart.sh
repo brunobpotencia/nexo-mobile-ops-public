@@ -5,7 +5,7 @@
 set -eu
 umask 077
 
-NEXO_UP=/home/box/agent-data/nexo/ops/boot/nexo-up.sh
+NEXO_UP=${NEXO_OPS:-$HOME/nexo/ops}/boot/nexo-up.sh
 UNIT_NAME=nexo-up.service
 UNIT_PATH=/etc/systemd/system/${UNIT_NAME}
 STAMP=$(date +%Y%m%d-%H%M%S)
@@ -55,7 +55,7 @@ EOF
 fi
 
 if command -v crontab >/dev/null 2>&1; then
-  BAK="${HOME:-/home/box}/crontab.bak-${STAMP}"
+  BAK="$HOME/crontab.bak-${STAMP}"
   crontab -l > "$BAK" 2>/dev/null || true
   chmod 600 "$BAK" 2>/dev/null || true
   echo "backup: $BAK"

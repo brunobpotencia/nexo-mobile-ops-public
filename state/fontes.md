@@ -19,4 +19,4 @@ Critério: fonte primária, gratuita, com conteúdo real e acionável.
 10. https://vercel.com/docs — Vercel. Deploy e runtime.
 
 ## Observação
-O feed da abuse.ch (ThreatFox/URLhaus) foi removido. O OAuth dela no GitHub foi revogado em 2026-10-19. Se um dia for reintroduzir, use a API pública sem OAuth: https://threatfox.abuse.ch/export/json/recent/ e https://urlhaus.abuse.ch/downloads/csv_recent/ — não exigem token.
+O feed da abuse.ch (ThreatFox/URLhaus) foi removido. O OAuth dela no GitHub foi revogado em AAAA-MM-DD. Se um dia for reintroduzir, use a API pública sem OAuth: https://threatfox.abuse.ch/export/json/recent/ e https://urlhaus.abuse.ch/downloads/csv_recent/ — não exigem token.

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# dashboard.sh — gera o painel de segurança (PNG + JSON) do Bruno. Somente leitura.
+# dashboard.sh — gera o painel de segurança (PNG + JSON) do dono. Somente leitura.
 # Uso: dashboard.sh            (coleta tudo e grava out/dashboard-latest.{png,json,html})
 #      DASH_NO_ANDROID=1 dashboard.sh   (pula SSH no dispositivo Android)
 # Nunca imprime segredos. Nunca roda netmon --rebaseline nem reaplica o firewall.

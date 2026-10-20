@@ -13,9 +13,9 @@ O conector GitHub autenticado via OAuth não tem escopos security_events e notif
 ## Cuidados
 - Nunca commitar o token no repo
 - Revogar em github.com/settings/tokens se vazar
-- Preferir fine-grained token com acesso só a brunobpotencia/nexo-mobile-ops se quiser escopo mínimo
+- Preferir fine-grained token com acesso só a <OWNER>/<REPO> se quiser escopo mínimo
 - O token local no box (gh auth) já cobre as automações meridian-secret-scan e meridian-dependabot-watch
 
 ## Alternativa sem token
 - Reconectar o OAuth em grok.com/settings/connectors pedindo escopos adicionais
-- Aceitar que Dependabot alerts fiquem no navegador: github.com/brunobpotencia/nexo-mobile-ops/security/dependabot
+- Aceitar que Dependabot alerts fiquem no navegador: github.com/<OWNER>/<REPO>/security/dependabot

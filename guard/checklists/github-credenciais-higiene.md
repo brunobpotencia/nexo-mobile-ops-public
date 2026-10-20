@@ -1,41 +1,40 @@
 # Checklist — higiene de credenciais GitHub (extract operacional)
 
-**Estado ao vivo 2026-10-05 ~11:40 BRT (UI GitHub, fonte Nexo):** baseline viva `/home/box/agent-data/nexo-guard/baseline/github-baseline-20261005.md` — 2FA **ON** (authenticator app); login Google sem senha/passkey; PATs classic/FG 0; OAuth Apps 0; SSH/GPG 0; Authorized Apps Copilot Chat/Cursor/Grok/Vercel; Installed Cursor/Vercel; `nexo-mobile-ops` Dependabot alerts+security updates ON, ruleset protect-main sem enforce (private free).  
-**Estado anterior (~11:22 BRT):** ver baseline `notes/2026-10-05-github-seguranca-baseline.md` e `nexo/ops/2026-10-05-github-seguranca-baseline.md`. Conta sem PAT classic/FG na UI; OAuth Apps vazio; `box-secrets` sem GITHUB_*; env ainda pode listar nomes GITHUB_* via injecção da plataforma mas valores estão **401 mortos** (não recriar classic amplo).
+**Estado ao vivo AAAA-MM-DD ~11:40 BRT (UI GitHub, fonte Nexo):** baseline viva `<BASELINE_LOCAL>` — 2FA **ON** (authenticator app); login Google sem senha/passkey; PATs classic/FG 0; OAuth Apps 0; SSH/GPG 0; Authorized Apps Copilot Chat/Cursor/Grok/Vercel; Installed Cursor/Vercel; `nexo-mobile-ops` Dependabot alerts+security updates ON, ruleset protect-main sem enforce (private free).  
+**Estado anterior (~11:22 BRT):** ver baseline `notes/<nota>.md` e `nexo/ops/AAAA-MM-DD-github-seguranca-baseline.md`. Conta sem PAT classic/FG na UI; OAuth Apps vazio; `box-secrets` sem GITHUB_*; env ainda pode listar nomes GITHUB_* via injecção da plataforma mas valores estão **401 mortos** (não recriar classic amplo).
 
 
-**Atualizado:** 2026-09-28 ~03:49 BRT (Security overview + Dependabot webhooks; nota `2026-09-28-04-github-security-overview-dependabot-webhooks.md`)
-**Notas:** **`2026-09-27-14-…`** · **`2026-09-27-13-…`** · **`2026-09-27-12-…`** · **`2026-09-27-09-…`** · **`2026-09-27-08-…`** · **`2026-09-27-07-…`** · **`2026-09-27-06-…`** · **`2026-09-27-05-…`** · **`2026-09-27-04-…`** · **`2026-09-27-03-…`** · **`2026-09-27-02-…`** · **`2026-09-27-01-…`** · `2026-09-20-01-…` · `2026-09-20-03-…` · `2026-09-20-06-…` · `2026-09-20-11-…` · `2026-09-20-15-…` · **`2026-09-20-17-…`** · **`2026-09-20-27-…`** · **`2026-09-20-29-…`** · **`2026-09-26-02-…`** · **`2026-09-26-03-…`** · **`2026-09-26-04-github-org-pat-policy-privileged-oauth-ssh-survive.md`** · **`2026-09-26-05-…`** · **`2026-09-26-06-github-gcm-cache-sso-ssh-fg-agent-perms-agh-edge-1a.md`** · **`2026-09-26-07-github-passkeys-2fa-checkup-sudo-recovery.md`** · **`2026-09-26-08-…`** · **`2026-09-26-09-…`** · **`2026-09-26-10-…`** · **`2026-09-26-11-…`**  
+**Notas:** **`<nota>`** · **`<nota>`** · **`<nota>`** · **`<nota>`** · **`<nota>`** · **`<nota>`** · **`<nota>`** · **`<nota>`** · **`<nota>`** · **`<nota>`** · **`<nota>`** · **`<nota>`** · `<nota>` · `<nota>` · `<nota>` · `<nota>` · `<nota>` · **`<nota>`** · **`<nota>`** · **`<nota>`** · **`<nota>`** · **`<nota>`** · **`<nota>`** · **`<nota>`** · **`<nota>`** · **`<nota>`** · **`<nota>`** · **`<nota>`** · **`<nota>`** · **`<nota>`**  
 **Erros HTTP / anti-loop:** `checklists/github-auth-errors.md` (árvore + §A–Z · §AA–§AE; §E OAuth … §W malware/DR + §X–§Z + §AB Global + §AC configs/patterns + §AD validity/statuses + §AE SS triage · … · §AS overview/webhooks)  
-**Lab:** `nexo/ops/2026-09-20-github-auth-lab.md`
+**Lab:** `nexo/ops/AAAA-MM-DD-github-auth-lab.md`
 
-Citações (acesso **2026-09-27** ~00:39): [Managing PATs](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) · [Org PAT policy](https://docs.github.com/en/organizations/managing-programmatic-access-to-your-organization/setting-a-personal-access-token-policy-for-your-organization) · [Reviewing/revoking FG in org](https://docs.github.com/en/organizations/managing-programmatic-access-to-your-organization/reviewing-and-revoking-personal-access-tokens-in-your-organization) · [Privileged OAuth apps](https://docs.github.com/en/apps/oauth-apps/using-oauth-apps/privileged-oauth-apps) · [SSO authorize PAT](https://docs.github.com/en/authentication/authenticating-with-saml-single-sign-on/authorizing-a-personal-access-token-for-use-with-saml-single-sign-on) · [Authorizing OAuth apps](https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/authorizing-oauth-apps) · [Token expiration](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/token-expiration-and-revocation)
+Citações (acesso **AAAA-MM-DD** ~00:39): [Managing PATs](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) · [Org PAT policy](https://docs.github.com/en/organizations/managing-programmatic-access-to-your-organization/setting-a-personal-access-token-policy-for-your-organization) · [Reviewing/revoking FG in org](https://docs.github.com/en/organizations/managing-programmatic-access-to-your-organization/reviewing-and-revoking-personal-access-tokens-in-your-organization) · [Privileged OAuth apps](https://docs.github.com/en/apps/oauth-apps/using-oauth-apps/privileged-oauth-apps) · [SSO authorize PAT](https://docs.github.com/en/authentication/authenticating-with-saml-single-sign-on/authorizing-a-personal-access-token-for-use-with-saml-single-sign-on) · [Authorizing OAuth apps](https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/authorizing-oauth-apps) · [Token expiration](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/token-expiration-and-revocation)
 
 Itens **LAB** = observação Nexo/Guard; não doc oficial.
 
 ## 1. Escolher o instrumento
 
-- [ ] Command line Git: preferir **GitHub CLI** (`gh auth login`, HTTPS + autenticar Git **Y**) ou **GCM** (OAuth/2FA — sem mintar PAT) — *Caching credentials* / Managing PATs; nota `2026-09-26-06-…`
+- [ ] Command line Git: preferir **GitHub CLI** (`gh auth login`, HTTPS + autenticar Git **Y**) ou **GCM** (OAuth/2FA — sem mintar PAT) — *Caching credentials* / Managing PATs; nota `<nota>`
 - [ ] Script/teste pessoal curto → **fine-grained** PAT (`github_pat_`)
 - [ ] Long-lived / multi-repo / org / bot → **GitHub App** (installation token ~1 h)
 - [ ] CI mesmo repo → `GITHUB_TOKEN`; cross-repo Actions → App
 - [ ] Classic `ghp_` só se gap oficial FG (Packages, multi-org, outside collaborator, write em público alheio, Projects de user) — WARNING blast radius; **Checks write ≠ classic** (só App — ver §7 / auth §N)
 - [ ] Cap **50** FG → planejar App; não acumular órfãos
-- [ ] OAuth app (MCP incluso): ≤**10** tokens por user/app/scope; 11º revoga outro; **10 creates/h** → re-auth prompt — sem force_reauth em loop (Token expiration; nota `2026-09-26-02-…`)
-- [ ] OAuth expirável: access **8 h**; refresh `ghr_` **6 meses sem uso**; refresh rota o par; scope **`offline_access`** = opt-in runtime (Authorizing OAuth apps; nota `2026-09-26-03-…`)
+- [ ] OAuth app (MCP incluso): ≤**10** tokens por user/app/scope; 11º revoga outro; **10 creates/h** → re-auth prompt — sem force_reauth em loop (Token expiration; nota `<nota>`)
+- [ ] OAuth expirável: access **8 h**; refresh `ghr_` **6 meses sem uso**; refresh rota o par; scope **`offline_access`** = opt-in runtime (Authorizing OAuth apps; nota `<nota>`)
 - [ ] CLI headless: device flow (sem `client_secret`; códigos 900 s; `slow_down`/+5 s; ≤50 submits/h) — preferir a mintar PAT
 
 ## 2. Criar / restringir PAT
 
 - [ ] FG: um resource owner; **Only select repositories**; permissões mínimas; expiração 30–90 d (evitar `none` salvo política)
-- [ ] FG: mesmo com Only select, token **sempre** tem read-only a **todos** os repositórios **públicos** no GitHub (Managing PATs; nota `2026-09-26-05-…`)
+- [ ] FG: mesmo com Only select, token **sempre** tem read-only a **todos** os repositórios **públicos** no GitHub (Managing PATs; nota `<nota>`)
 - [ ] Org que bloqueou FG **não aparece** em Resource owner; justification se approval exigido
 - [ ] FG/classic ficam **inactive** se o user **perde acesso** ao recurso (não só expire/revoke)
 - [ ] Create-repo `POST /user/repos`: FG = **Administration write** (Permissions FG; docs também listam sob heading “Repository creation” — mesmo endpoint); classic = `public_repo`/`repo`; falha → `X-Accepted-GitHub-Permissions`
 - [ ] Classic inevitável: scope mínimo; lembrar acesso a **todos** os repos do dono
 - [ ] Classic **sem scopes** = só informação pública (ainda é credencial — não “morto”)
-- [ ] Git CLI: Password = PAT; **username não autentica** (obrigatório no prompt; vazio → inválido); PAT **só HTTPS** — remote SSH ≠ PAT (nota `2026-09-26-05-…`)
-- [ ] Sem prompt Git → cache (Keychain/GCM/Credential Manager); Windows: apagar entrada GitHub no Credential Manager; macOS Keychain; Git for Windows ≥2.29; limpar **após** Security log (nota `2026-09-26-06-…`)
+- [ ] Git CLI: Password = PAT; **username não autentica** (obrigatório no prompt; vazio → inválido); PAT **só HTTPS** — remote SSH ≠ PAT (nota `<nota>`)
+- [ ] Sem prompt Git → cache (Keychain/GCM/Credential Manager); Windows: apagar entrada GitHub no Credential Manager; macOS Keychain; Git for Windows ≥2.29; limpar **após** Security log (nota `<nota>`)
 - [ ] EMU re-prompt eterno → `git config --global credential.gitHubAccountFiltering "false"`
 - [ ] Prefixo = tipo: `ghp_` / `github_pat_` / `gho_` / `ghu_` / `ghs_` / `ghr_` — tratar como segredo
 - [ ] Template URL FG opcional (`/settings/personal-access-tokens/new?…`) para perms mínimas — ainda inventariar órfãos
@@ -43,7 +42,7 @@ Itens **LAB** = observação Nexo/Guard; não doc oficial.
 ## 3. Tokens opacos (incl. `ghs_` 2026)
 
 - [ ] **Nunca** validar token por length fixo (40) nem regex `ghs_[A-Za-z0-9]{36}`
-- [ ] Installation / Actions `GITHUB_TOKEN` pode ser opaco curto **ou** `ghs_APPID_JWT` (~520 chars, 2 dots) — Changelog 2026-04-24 / 2026-05-15
+- [ ] Installation / Actions `GITHUB_TOKEN` pode ser opaco curto **ou** `ghs_APPID_JWT` (~520 chars, 2 dots) — Changelog AAAA-MM-DD / AAAA-MM-DD
 - [ ] Storage ≥520 chars se guardar `ghs_`
 - [ ] Não parsear JWT de `ghs_`; header teste `X-GitHub-Stateless-S2S-Token` é temporário
 - [ ] Fingerprint LAB (prefix+len) só faz sentido estável em PAT; `ghs_` length varia
@@ -51,7 +50,7 @@ Itens **LAB** = observação Nexo/Guard; não doc oficial.
 ## 4. Canal Bot / MCP (**LAB**)
 
 - [ ] Um canal: MCP OAuth **ou** PAT env — não misturar
-- [ ] PAT inevitável em script: **Actions secret** (CI) ou **Codespaces secret** (dev) — Managing PATs; ver nota `2026-09-20-29-…` (stores não se cruzam)
+- [ ] PAT inevitável em script: **Actions secret** (CI) ou **Codespaces secret** (dev) — Managing PATs; ver nota `<nota>` (stores não se cruzam)
 - [ ] Secret-request só nomes em `CLOUD_AGENT_INJECTED_SECRET_NAMES` (observado: `GITHUB_PERSONAL_ACCESS_TOKEN`)
 - [ ] Validar em Shell **novo**; nunca ecoar; sem `unset` sticky de `GITHUB_TOKEN`
 - [ ] Probe `GET /user`: 401 → fingerprint; **2º idêntico → STOP**; 403/429 rate → esperar, **sem** force_reauth
@@ -59,9 +58,9 @@ Itens **LAB** = observação Nexo/Guard; não doc oficial.
 ## 5. Inventário periódico
 
 - [ ] Developer settings → Fine-grained **e** Tokens (classic): apagar órfãos / classic amplo / sem expiração
-- [ ] **Antes** de deletar PAT: checar se criou deploy key — deletar o PAT **remove** a deploy key (Managing PATs; nota `2026-09-26-02-…`)
+- [ ] **Antes** de deletar PAT: checar se criou deploy key — deletar o PAT **remove** a deploy key (Managing PATs; nota `<nota>`)
 - [ ] SSH and GPG keys; Applications → Authorized OAuth / GitHub Apps (OAuth: olhar rajadas / órfãos se houve loop de reauth)
-- [ ] **Antes** de revogar **todas** as permissões de uma OAuth app: inventariar SSH/deploy keys — revoke-all **apaga** keys geradas pela app incl. deploy keys (Authorizing OAuth apps WARNING; nota `2026-09-26-03-…`)
+- [ ] **Antes** de revogar **todas** as permissões de uma OAuth app: inventariar SSH/deploy keys — revoke-all **apaga** keys geradas pela app incl. deploy keys (Authorizing OAuth apps WARNING; nota `<nota>`)
 - [ ] Security log 90 d: `personal_access_token.*` · `oauth_*` · `public_key.*` (ver `github-auth-errors.md` §G)
 - [ ] `personal_access_token.credential_revoked` → tratar como vazamento até prova contrária
 - [ ] Push protection usuário ligado
@@ -69,14 +68,14 @@ Itens **LAB** = observação Nexo/Guard; não doc oficial.
 
 ## 5b. Org policy / privileged OAuth / SSH que sobrevive
 
-- [ ] Org Restrict PAT (FG ou classic): bloqueia recursos **owned** pela org — **SSH keys criadas por PATs continuam**; públicos da org ainda acessíveis a PATs (Org PAT policy; nota `2026-09-26-04-…`)
+- [ ] Org Restrict PAT (FG ou classic): bloqueia recursos **owned** pela org — **SSH keys criadas por PATs continuam**; públicos da org ainda acessíveis a PATs (Org PAT policy; nota `<nota>`)
 - [ ] Org Revoke FG (*Active tokens*): e-mail ao user; **SSH do token continua**; token **ainda lê públicos**; UI **não** lista classic (Reviewing/revoking FG in org)
 - [ ] API org review/revoke FG = **só GitHub Apps** (não PAT/OAuth)
 - [ ] FG approval: Require admin (**default**); `pending` → só públicos até approve; owners auto-approve; classic **fora** do approval
 - [ ] Max lifetime FG default org **366 d**; classic sem requirement por default; non-compliant **não** auto-revoga — falha API na org
 - [ ] SSO: classic = Configure SSO pós-criação; FG = durante criação; **linked identity** exige authorize mesmo se SSO não enforced
 - [ ] SSO: regenerar/editar scopes classic → re-Authorize; expire também cai authorize
-- [ ] SSH SSO: org **revoga** authorize → **criar key nova** (mesma key não reautoriza); certs CA da org sem authorize; `internal` enterprise precisa SSO auth (nota `2026-09-26-06-…`)
+- [ ] SSH SSO: org **revoga** authorize → **criar key nova** (mesma key não reautoriza); certs CA da org sem authorize; `internal` enterprise precisa SSO auth (nota `<nota>`)
 - [ ] Privileged OAuth (GitHub-owned: GCM, CLI, Desktop, Copilot CLI, VS Code, …): podem acessar org mesmo com restrict OAuth; algumas auto-incluídas **não** aparecem em Authorized OAuth; security log user ≠ audit log org
 - [ ] Template FG: não mintar `copilot_requests=write` sem intenção — conta no allowance / overage
 - [ ] IR: Restrict/Revoke FG **não** substitui Delete de SSH/deploy keys suspeitas (cruzar delete-PAT→deploy-key e revoke-all OAuth→SSH)
@@ -93,7 +92,7 @@ Itens **LAB** = observação Nexo/Guard; não doc oficial.
 - [ ] Recovery DOC: SSH **authentication**; PAT classic **`repo`**; verified devices (cruzar inventário — blast radius)
 - [ ] Sudo: 2 h; SMS não autentica; passkey/TOTP/Mobile/security key/senha; regenerar recovery codes exige sudo
 - [ ] IR Preventing unauthorized: inventário SSH/deploy/OAuth/Apps + Security log + e-mails + webhooks + collaborators
-- [ ] Nota `2026-09-26-07-…` · `github-auth-errors.md` §M · `github-scm.md`
+- [ ] Nota `<nota>` · `github-auth-errors.md` §M · `github-scm.md`
 
 ## 6. Revogação / incidente
 
@@ -104,14 +103,14 @@ Itens **LAB** = observação Nexo/Guard; não doc oficial.
 - [ ] Unused classic/OAuth/PAT: revogação automática após **1 ano** sem uso
 - [ ] OAuth excess: 11º token mesmo user/app/scope revoga outro; hourly create 10 → prompt (não loop)
 - [ ] OAuth revoke-all perms → SSH/deploy keys da app somem (cruzar inventário)
-- [ ] Org Restrict PAT / Revoke FG → SSH criada pelo PAT/token **não** some — apagar keys à parte (nota `2026-09-26-04-…`)
+- [ ] Org Restrict PAT / Revoke FG → SSH criada pelo PAT/token **não** some — apagar keys à parte (nota `<nota>`)
 - [ ] Refresh morto (`bad_refresh_token`) → novo web/device flow; não milking refresh
 - [ ] Suspeita: revogar UI → Sessions → confirmar Security log → só então limpar `gh auth`/caches
 - [ ] Credential revocation API: `POST /credentials/revoke` **unauthenticated** (auth → 403); ≤1000 tokens; 60 req/h; `ghp_` / `github_pat_` / `gho_` / `ghu_` / `ghr_` — **não** `ghs_`
-- [ ] **NOVO** Remediation plan DOC (*Keeping API credentials secure*): (1) gerar novo · (2) substituir em **todos** os stores · (3) deletar comprometido — nota `2026-09-26-08-…`
+- [ ] **NOVO** Remediation plan DOC (*Keeping API credentials secure*): (1) gerar novo · (2) substituir em **todos** os stores · (3) deletar comprometido — nota `<nota>`
 - [ ] Gaps FG reconfirmados inalterados (public/outside/multi-org/Packages/Checks/user Projects); cap **50** (~00:39)
-- [ ] IR profunda (restricted account, 2FA lockout, Support policy): nota `2026-09-20-17-…` + `resposta-incidente.md` §13
-- [ ] Bulk Credentials Danger zone: **Revoke all SSO** (enterprise — não apaga credenciais) / **Delete all** keys+tokens (**só EMU**) — irreversible; ≠ playbook Free/Pro — inventário manual (Revoking your credentials; nota `2026-09-26-05-…`)
+- [ ] IR profunda (restricted account, 2FA lockout, Support policy): nota `<nota>` + `resposta-incidente.md` §13
+- [ ] Bulk Credentials Danger zone: **Revoke all SSO** (enterprise — não apaga credenciais) / **Delete all** keys+tokens (**só EMU**) — irreversible; ≠ playbook Free/Pro — inventário manual (Revoking your credentials; nota `<nota>`)
 
 
 ## 7. Gaps FG — Checks ≠ Statuses / Packages (operacional)
@@ -121,7 +120,7 @@ Itens **LAB** = observação Nexo/Guard; não doc oficial.
 - [ ] Packages: **classic** `read:packages` / `write:packages` / `delete:packages` — FG não autentica Packages (DOC)
 - [ ] Packages + Actions: `GITHUB_TOKEN` + Manage Actions access antes de classic
 - [ ] Template: evitar Models / Knowledge bases / Private registries / Artifact metadata / Code quality / API Insights / Campaigns sem intenção
-- [ ] Nota `2026-09-26-09-…` · `github-auth-errors.md` §N
+- [ ] Nota `<nota>` · `github-auth-errors.md` §N
 
 ## 8. Push protection / MCP / remediação de leak
 
@@ -132,7 +131,7 @@ Itens **LAB** = observação Nexo/Guard; não doc oficial.
 - [ ] Leak privado PAT → revogar → *Report leak* (preview) → Close as Revoked
 - [ ] Ordem: revoke provider **antes** de reescrever histórico; apagar linha ≠ remediar
 - [ ] Padrões com PP: PAT · OAuth · App install · Refresh · SSH key (`github_test_token` sem PP)
-- [ ] Nota `2026-09-26-10-…` · `github-auth-errors.md` §O
+- [ ] Nota `<nota>` · `github-auth-errors.md` §O
 
 ## 9. `GITHUB_TOKEN` em Actions (antes de mintar PAT)
 
@@ -143,16 +142,16 @@ Itens **LAB** = observação Nexo/Guard; não doc oficial.
 - [ ] Fork / Dependabot: assume read-only + sem secrets Actions; `pull_request_target` = write mesmo de fork público (cuidado)
 - [ ] Cross-repo → App installation token; PAT em Actions secret = último recurso (stores separados — nota 29)
 - [ ] `checks: write` no embutido OK; secret scanning alerts ≠ `security-events`
-- [ ] Nota `2026-09-26-11-…` · `github-auth-errors.md` §P · `github-scm.md`
+- [ ] Nota `<nota>` · `github-auth-errors.md` §P · `github-scm.md`
 
 ## 10. OIDC / cloud deploy (antes de mintar key)
 
 - [ ] Cloud no CI → federated OIDC no provider **antes** de Actions secret com key long-lived
 - [ ] `permissions: id-token: write` + action oficial; `id-token: write` ≠ write no GitHub
 - [ ] Trust com `sub` pinado (preferir `environment:prod`) e ≥1 condição
-- [ ] Repo pós-2026-07-15: conferir `sub` imutável `@ID`
+- [ ] Repo pós-AAAA-MM-DD: conferir `sub` imutável `@ID`
 - [ ] Dependabot registry: OIDC se couber; senão store Dependabot (não Actions)
-- [ ] Nota `2026-09-26-12-…` · `github-auth-errors.md` §Q · `github-scm.md`
+- [ ] Nota `<nota>` · `github-auth-errors.md` §Q · `github-scm.md`
 
 ## 11. Environment secrets / protection (produção)
 
@@ -164,7 +163,7 @@ Itens **LAB** = observação Nexo/Guard; não doc oficial.
 - [ ] Write no repo = lê secrets de repo (Secure use) — least privilege na *credencial* dentro do secret
 - [ ] Self-hosted: env secrets ≠ isolamento
 - [ ] Delete env = wipe; inventariar antes
-- [ ] Nota `notes/2026-09-27-01-github-environment-secrets-protection-rules.md` · `github-auth-errors.md` §R · `github-scm.md`
+- [ ] Nota `notes/<nota>.md` · `github-auth-errors.md` §R · `github-scm.md`
 
 ## 12. Variables vs secrets + reusable inherit
 
@@ -174,7 +173,7 @@ Itens **LAB** = observação Nexo/Guard; não doc oficial.
 - [ ] Env secrets não viajam no `workflow_call` — declarar `environment:` no job do reusable
 - [ ] Cadeia nested: passar secrets hop a hop
 - [ ] Sensitive gerado no job → `::add-mask::` antes de log
-- [ ] Nota `notes/2026-09-27-02-github-actions-variables-vs-secrets-inherit.md` · `github-auth-errors.md` §S · `github-scm.md`
+- [ ] Nota `notes/<nota>.md` · `github-auth-errors.md` §S · `github-scm.md`
 
 ## 13. Script injection / pwn request / checkout (CI YAML)
 
@@ -185,8 +184,8 @@ Itens **LAB** = observação Nexo/Guard; não doc oficial.
 - [ ] `persist-credentials: false` se não precisa git auth no job
 - [ ] Checkout v7: não setar `allow-unsafe-pr-checkout` sem inspeção-só documentada
 - [ ] Pin actions em **SHA completo**; CODEOWNERS em workflows
-- [ ] Público: revisar policy insights PRT antes do enforce **2026-11-02**
-- [ ] Nota `notes/2026-09-27-03-github-actions-script-injection-pwn-request-checkout.md` · `github-auth-errors.md` §T · `github-scm.md`
+- [ ] Público: revisar policy insights PRT antes do enforce **AAAA-MM-DD**
+- [ ] Nota `notes/<nota>.md` · `github-auth-errors.md` §T · `github-scm.md`
 
 
 ## 14. Artifact attestations + compromised runners
@@ -197,7 +196,7 @@ Itens **LAB** = observação Nexo/Guard; não doc oficial.
 - [ ] Workflow: **nunca** classic PAT / SSH pessoal; ordem `GITHUB_TOKEN` → deploy key → App → FG org
 - [ ] Self-hosted: não em público; efêmero/JIT + groups; env secrets ≠ isolamento
 - [ ] Compromisso do runner = assume secrets/`GITHUB_TOKEN` vazados → revoke/rotate (§6 / IR)
-- [ ] Nota `notes/2026-09-27-04-github-actions-artifact-attestations-compromised-runners.md` · `github-auth-errors.md` §U · `github-scm.md`
+- [ ] Nota `notes/<nota>.md` · `github-auth-errors.md` §U · `github-scm.md`
 
 ## 15. Immutable releases + release attestations
 
@@ -207,7 +206,7 @@ Itens **LAB** = observação Nexo/Guard; não doc oficial.
 - [ ] Release attestation (auto) ≠ build provenance `actions/attest` — preferir **ambos**
 - [ ] Política org via API = `admin:org` / Organization write — preferir UI; sem classic amplo
 - [ ] CI publish: `GITHUB_TOKEN`; nunca classic/SSH pessoal
-- [ ] Nota `notes/2026-09-27-05-github-immutable-releases-release-attestations.md` · `github-auth-errors.md` §V · `github-scm.md`
+- [ ] Nota `notes/<nota>.md` · `github-auth-errors.md` §V · `github-scm.md`
 
 ## 16. Dependabot malware + dependency review (credenciais)
 
@@ -216,8 +215,8 @@ Itens **LAB** = observação Nexo/Guard; não doc oficial.
 - [ ] Registry privado homônimo: avaliar preset Dismiss package malware alerts com revisão de Closed
 - [ ] `dependency-review-action`: só `contents: read`; pin SHA; sem `ghp_` no YAML
 - [ ] Config-file externo privado → secret FG/App mínimo, não classic commitado
-- [ ] CVE security updates: secrets no store **Dependabot** se o workflow for do Dependabot (§ secrets 2026-09-20-29)
-- [ ] Nota `notes/2026-09-27-06-github-dependabot-malware-dependency-review.md` · `github-auth-errors.md` §W · `github-scm.md`
+- [ ] CVE security updates: secrets no store **Dependabot** se o workflow for do Dependabot (§ secrets AAAA-MM-DD-29)
+- [ ] Nota `notes/<nota>.md` · `github-auth-errors.md` §W · `github-scm.md`
 
 ## 17. Dependabot security updates + grouped (credenciais)
 
@@ -227,7 +226,7 @@ Itens **LAB** = observação Nexo/Guard; não doc oficial.
 - [ ] CI em PR Dependabot: secrets no store Dependabot; `GITHUB_TOKEN` read-only default
 - [ ] Só CVE: `open-pull-requests-limit: 0` + `applies-to: security-updates`
 - [ ] Malware ≠ security update — remover pacote (§16 / §W)
-- [ ] Nota `notes/2026-09-27-07-github-dependabot-security-updates-grouped.md` · `github-auth-errors.md` §X · `github-scm.md`
+- [ ] Nota `notes/<nota>.md` · `github-auth-errors.md` §X · `github-scm.md`
 
 ## 18. Dependabot version updates + schedule (credenciais)
 
@@ -237,7 +236,7 @@ Itens **LAB** = observação Nexo/Guard; não doc oficial.
 - [ ] Actions: bloco `github-actions` / `directory: "/"`
 - [ ] Packages / registries: igual §17 (Manage Actions access / Dependabot secrets / OIDC)
 - [ ] Fork: Enable UI além do YAML herdado
-- [ ] Nota `notes/2026-09-27-08-github-dependabot-version-updates-schedule-hygiene.md` · `github-auth-errors.md` §Y · `github-scm.md`
+- [ ] Nota `notes/<nota>.md` · `github-auth-errors.md` §Y · `github-scm.md`
 
 ## 19. Dependabot auto-triage + multi-ecosystem (credenciais)
 
@@ -246,7 +245,7 @@ Itens **LAB** = observação Nexo/Guard; não doc oficial.
 - [ ] Preset malware dismiss: só com FP interno documentado; revisar Closed (§16)
 - [ ] Multi-ecosystem: YAML `multi-ecosystem-groups` + `patterns`; schedule no group
 - [ ] Registries / Packages: igual §17/§18 (Dependabot secrets / OIDC / Manage Actions access)
-- [ ] Nota `notes/2026-09-27-09-github-dependabot-auto-triage-multi-ecosystem.md` · `github-auth-errors.md` §Z · `github-scm.md`
+- [ ] Nota `notes/<nota>.md` · `github-auth-errors.md` §Z · `github-scm.md`
 
 ## 20. ARC / scale sets (credenciais)
 
@@ -257,7 +256,7 @@ Itens **LAB** = observação Nexo/Guard; não doc oficial.
 - [ ] Vault AKV: string `githubConfigSecret` + cert nos dois pods (controller+listener)
 - [ ] Público: **não** ARC — hosted; privado: runner groups + NS isolados
 - [ ] Compromisso runner/ARC: revoke App/PAT + rotate (§6 / §14 / IR)
-- [ ] Nota `notes/2026-09-27-10-github-arc-scale-sets-auth-ops.md` · `github-auth-errors.md` §AA · `github-scm.md`
+- [ ] Nota `notes/<nota>.md` · `github-auth-errors.md` §AA · `github-scm.md`
 
 ## 21. Dependabot org Global / self-hosted / grant privado / ruleset DR
 
@@ -268,7 +267,7 @@ Itens **LAB** = observação Nexo/Guard; não doc oficial.
 - [ ] Enforce DR: ruleset Require workflows + action pinada (§16 / §W)
 - [ ] Monorepo: `group-by: dependency-name` (version, mesmo ecosystem)
 - [ ] Infra ARC: label/group alinhados (§20 / §AA); compromisso → revoke
-- [ ] Nota `notes/2026-09-27-11-github-dependabot-org-global-runner-private-access.md` · `github-auth-errors.md` §AB · `github-scm.md`
+- [ ] Nota `notes/<nota>.md` · `github-auth-errors.md` §AB · `github-scm.md`
 
 ## 22. Security configurations + custom patterns (credenciais)
 
@@ -278,7 +277,7 @@ Itens **LAB** = observação Nexo/Guard; não doc oficial.
 - [ ] REST: `write:org` classic se automação; enterprise-enforced ≠ FG/App (precisa `admin:enterprise`)
 - [ ] Delete/detach mantém settings do repo; não confundir com revoke de PAT
 - [ ] Cruzar §8/§O push protection · §16/§W malware · §21/§AB Global Dependabot
-- [ ] Nota `notes/2026-09-27-12-github-security-configurations-custom-patterns.md` · `github-auth-errors.md` §AC · `github-scm.md`
+- [ ] Nota `notes/<nota>.md` · `github-auth-errors.md` §AC · `github-scm.md`
 
 ## 23. Validity checks / config statuses / enforcement (credenciais)
 
@@ -287,7 +286,7 @@ Itens **LAB** = observação Nexo/Guard; não doc oficial.
 - [ ] `active` → remediar (§8/§O / IR); não mintar PAT para “só checar”
 - [ ] Pós-Apply: filtrar `failed`/`removed`; Enforce para evitar override; REST 200 sob Enforce ≠ mudança
 - [ ] Cruzar §22/§AC configs · §8/§O push protection · IR §13
-- [ ] Nota `notes/2026-09-27-13-github-validity-checks-config-statuses-enforcement.md` · `github-auth-errors.md` §AD · `github-scm.md`
+- [ ] Nota `notes/<nota>.md` · `github-auth-errors.md` §AD · `github-scm.md`
 
 ## 24. Secret scanning alert triage (REST / webhooks)
 
@@ -297,7 +296,7 @@ Itens **LAB** = observação Nexo/Guard; não doc oficial.
 - [ ] Automação: FG **Secret scanning alerts** (read/write); `hide_secret=true`; nunca logar campo `secret`
 - [ ] Webhook `secret_scanning_alert` (+ location/scan) > poll; validar Signature-256; secret do hook em Secrets
 - [ ] Cruzar §8/§O remediação · §23/§AD validity · IR §13
-- [ ] Nota `notes/2026-09-27-14-github-secret-scanning-alert-triage-rest-webhooks.md` · `github-auth-errors.md` §AE · `github-scm.md`
+- [ ] Nota `notes/<nota>.md` · `github-auth-errors.md` §AE · `github-scm.md`
 
 ## 25. CodeQL default setup / language matrix (credenciais)
 
@@ -308,7 +307,7 @@ Itens **LAB** = observação Nexo/Guard; não doc oficial.
 - [ ] Runner self-hosted: label pronto (`code-scanning`); público preferir hosted (§14/§U)
 - [ ] Compromisso token CodeQL automação → revoke + rotate (§6 / IR §13)
 - [ ] Cruzar §22/§AC configs · §20/§AA runners · §24/§AE SS triage (separar SS vs CodeQL)
-- [ ] Nota `notes/2026-09-27-15-github-codeql-default-setup-language-matrix.md` · `github-auth-errors.md` §AF · `github-scm.md`
+- [ ] Nota `notes/<nota>.md` · `github-auth-errors.md` §AF · `github-scm.md`
 
 ## 26. CodeQL advanced setup / custom queries (credenciais)
 
@@ -319,7 +318,7 @@ Itens **LAB** = observação Nexo/Guard; não doc oficial.
 - [ ] At-scale: App / script mínimo — não 1 classic multi-org
 - [ ] Compromisso secret queries/packs → revoke + rotate (§6 / IR §13)
 - [ ] Cruzar §25/§AF default · §22/§AC configs · §20/§AA runners (Swift≠ARC)
-- [ ] Nota `notes/2026-09-27-16-github-codeql-advanced-setup-custom-queries.md` · `github-auth-errors.md` §AG · `github-scm.md`
+- [ ] Nota `notes/<nota>.md` · `github-auth-errors.md` §AG · `github-scm.md`
 
 ## 27. CodeQL compiled languages / build modes (credenciais)
 
@@ -328,7 +327,7 @@ Itens **LAB** = observação Nexo/Guard; não doc oficial.
 - [ ] Packs/queries externos: igual §26 (`external-repository-token` FG Contents); GHES = classic `read:packages` só esse path
 - [ ] Compromisso secret build/registry → revoke + rotate (§6 / IR §13)
 - [ ] Cruzar §25/§AF default · §26/§AG advanced · §20/§AA runners (Swift≠ARC) · §14/§U self-hosted
-- [ ] Nota `notes/2026-09-27-17-github-codeql-compiled-languages-build-modes.md` · `github-auth-errors.md` §AH · `github-scm.md`
+- [ ] Nota `notes/<nota>.md` · `github-auth-errors.md` §AH · `github-scm.md`
 
 ## 28. Code scanning alert triage + Autofix (credenciais)
 
@@ -339,7 +338,7 @@ Itens **LAB** = observação Nexo/Guard; não doc oficial.
 - [ ] Nunca PAT no YAML CodeQL para “gerar fix”; Autofix é produto Security UI/API
 - [ ] Compromisso token triage/autofix → revoke + rotate (§6 / IR §13)
 - [ ] Cruzar §25/§AF default · §26/§AG advanced · §27/§AH build modes · §24/§AE SS (produto diferente)
-- [ ] Nota `notes/2026-09-27-18-github-code-scanning-alert-triage-autofix.md` · `github-auth-errors.md` §AI · `github-scm.md`
+- [ ] Nota `notes/<nota>.md` · `github-auth-errors.md` §AI · `github-scm.md`
 
 ## 29. Code scanning merge protection + delegated dismissal (credenciais)
 
@@ -350,7 +349,7 @@ Itens **LAB** = observação Nexo/Guard; não doc oficial.
 - [ ] Nunca PAT no YAML CodeQL para “abrir merge”; gate é ruleset Settings
 - [ ] Compromisso token ruleset/dismissal → revoke + rotate (§6 / IR §13)
 - [ ] Cruzar §28/§AI triage · §25/§AF default · §22/§AC configs · §24/§AE SS (produto diferente)
-- [ ] Nota `notes/2026-09-27-19-github-code-scanning-merge-protection-delegated-dismissal.md` · `github-auth-errors.md` §AJ · `github-scm.md`
+- [ ] Nota `notes/<nota>.md` · `github-auth-errors.md` §AJ · `github-scm.md`
 
 ## 30. SARIF upload / third-party CI (credenciais)
 
@@ -361,7 +360,7 @@ Itens **LAB** = observação Nexo/Guard; não doc oficial.
 - [ ] Default setup CodeQL: não forçar upload CodeQL externo (bloqueado) — third-party OK
 - [ ] Compromisso token upload → revoke + rotate (§6 / IR §13)
 - [ ] Cruzar §28/§AI triage · §29/§AJ merge/delegated · §25/§AF default · §26/§AG advanced
-- [ ] Nota `notes/2026-09-27-20-github-sarif-upload-third-party-ci.md` · `github-auth-errors.md` §AK · `github-scm.md`
+- [ ] Nota `notes/<nota>.md` · `github-auth-errors.md` §AK · `github-scm.md`
 
 ## 31. Security campaigns + alert↔Issues (credenciais)
 
@@ -372,7 +371,7 @@ Itens **LAB** = observação Nexo/Guard; não doc oficial.
 - [ ] Nunca classic long-lived “porque REST campaigns existe”
 - [ ] Compromisso → revoke + rotate (§6 / IR §13)
 - [ ] Cruzar §AC configs · §AI triage/Autofix · §AJ merge/delegated · §AK SARIF · §AE SS
-- [ ] Nota `notes/2026-09-27-21-github-security-campaigns-alert-tracking-issues.md` · `github-auth-errors.md` §AL · `github-scm.md`
+- [ ] Nota `notes/<nota>.md` · `github-auth-errors.md` §AL · `github-scm.md`
 
 ## 32. Code Quality thresholds / tool status / coverage (credenciais)
 
@@ -382,7 +381,7 @@ Itens **LAB** = observação Nexo/Guard; não doc oficial.
 - [ ] Nunca classic long-lived “porque REST rulesets existe”
 - [ ] Compromisso → revoke + rotate (§6 / IR §13)
 - [ ] Cruzar §29/§AJ CS merge · §30/§AK SARIF · §28/§AI triage · §25/§AF CodeQL default
-- [ ] Nota `notes/2026-09-27-22-github-code-quality-thresholds-tool-status-sarif.md` · `github-auth-errors.md` §AM · `github-scm.md`
+- [ ] Nota `notes/<nota>.md` · `github-auth-errors.md` §AM · `github-scm.md`
 
 ## 33. Private vulnerability reporting / repository advisories (credenciais)
 
@@ -393,7 +392,7 @@ Itens **LAB** = observação Nexo/Guard; não doc oficial.
 - [ ] Nunca PAT no chat/YAML para “abrir advisory”; publish/CVE = UI ou REST autenticado no secret store
 - [ ] Compromisso → revoke + rotate (§6 / IR §13)
 - [ ] Cruzar §AC configs · §AL campaigns/SM · §AM Code Quality · §W/§X Dependabot (pós-publish)
-- [ ] Nota `notes/2026-09-27-23-github-private-vulnerability-reporting-repository-advisories.md` · `github-auth-errors.md` §AN · `github-scm.md`
+- [ ] Nota `notes/<nota>.md` · `github-auth-errors.md` §AN · `github-scm.md`
 
 ## 34. Temporary private fork / writing advisories (credenciais)
 
@@ -404,7 +403,7 @@ Itens **LAB** = observação Nexo/Guard; não doc oficial.
 - [ ] Nunca PAT no chat/YAML para “abrir private fork”; CI do fork **não** existe (integrations blocked)
 - [ ] Compromisso → revoke + rotate (§6 / IR §13)
 - [ ] Cruzar §33/§AN PVR/advisories · §AL campaigns/SM · Dependabot pós-publish
-- [ ] Nota `notes/2026-09-27-24-github-advisory-private-fork-write-best-practices.md` · `github-auth-errors.md` §AO · `github-scm.md`
+- [ ] Nota `notes/<nota>.md` · `github-auth-errors.md` §AO · `github-scm.md`
 
 ## 35. Edit/delete repository advisories + Improve global GAD (credenciais)
 
@@ -412,11 +411,11 @@ Itens **LAB** = observação Nexo/Guard; não doc oficial.
 - [ ] Automação PATCH metadata: FG **Repository security advisories** write (1 repo, expiração curta); classic `repository_advisories:write`/`repo` último
 - [ ] Preferir App org-scoped multi-repo; nunca classic long-lived “porque PATCH existe”
 - [ ] Delete published → Support portal (**não** PAT)
-- [ ] GAD community PR = conta pessoal contributor — **não** injetar PAT org Bruno em `advisory-database`
+- [ ] GAD community PR = conta pessoal contributor — **não** injetar PAT org do dono em `advisory-database`
 - [ ] Nunca PAT no chat/YAML para “corrigir GHSA” ou “apagar advisory”
 - [ ] Compromisso → revoke + rotate (§6 / IR §13)
 - [ ] Cruzar §34/§AO private fork/write · §33/§AN PVR/advisories · Dependabot pós-publish
-- [ ] Nota `notes/2026-09-28-01-github-edit-delete-advisory-global-gad.md` · `github-auth-errors.md` §AP · `github-scm.md`
+- [ ] Nota `notes/<nota>.md` · `github-auth-errors.md` §AP · `github-scm.md`
 
 ## 36. Global advisories REST / Dependabot from GAD (credenciais)
 
@@ -429,7 +428,7 @@ Itens **LAB** = observação Nexo/Guard; não doc oficial.
 - [ ] Nunca PAT no chat/YAML para “listar GHSA” ou “dismiss alert”
 - [ ] Compromisso → revoke + rotate (§6 / IR §13)
 - [ ] Cruzar §35/§AP edit-delete/Improve GAD · §33/§AN PVR · §W/§X/§Z Dependabot · §AB org Global
-- [ ] Nota `notes/2026-09-28-02-github-global-advisories-rest-dependabot-from-gad.md` · `github-auth-errors.md` §AQ · `github-scm.md`
+- [ ] Nota `notes/<nota>.md` · `github-auth-errors.md` §AQ · `github-scm.md`
 
 ## 37. GraphQL GAD / Dependabot assign-agent (credenciais)
 
@@ -437,12 +436,12 @@ Itens **LAB** = observação Nexo/Guard; não doc oficial.
 - [ ] GraphQL automação: App ou FG curto com permissões mínimas; classic long-lived **proibido** “porque GraphQL exige bearer”
 - [ ] Unauth GraphQL/REST rate-limit → esperar / UI; não milking turns/cota
 - [ ] Assign humano/team: UI write+; automação PATCH → FG **Dependabot alerts** write (`vulnerability_alerts`)
-- [ ] Assign AI agent: só com autorização Bruno; bot login + opcional `agent_assignment`; App/FG write — classic último
+- [ ] Assign AI agent: só com autorização do dono; bot login + opcional `agent_assignment`; App/FG write — classic último
 - [ ] Nunca confundir FG Dependabot alerts com FG Repository security advisories
 - [ ] Nunca PAT no chat/YAML para “assign agent” ou “query GraphQL GAD”
 - [ ] Compromisso → revoke + rotate (§6 / IR §13)
 - [ ] Cruzar §36/§AQ REST+browse · §W/§X/§Z Dependabot · §AI agentic CS (eixo separado) · §AB org Global
-- [ ] Nota `notes/2026-09-28-03-github-graphql-gad-dependabot-assign-agent.md` · `github-auth-errors.md` §AR · `github-scm.md`
+- [ ] Nota `notes/<nota>.md` · `github-auth-errors.md` §AR · `github-scm.md`
 
 ## 38. Security overview / Dependabot webhooks (credenciais)
 
@@ -455,7 +454,7 @@ Itens **LAB** = observação Nexo/Guard; não doc oficial.
 - [ ] Assignments: repo view (§37/§AR); org overview **não** lista assignees
 - [ ] Compromisso → revoke + rotate (§6 / IR §13)
 - [ ] Cruzar §37/§AR assign · §36/§AQ GAD · §W/§Z Dependabot · §AL campaigns · §AE SS webhooks
-- [ ] Nota `notes/2026-09-28-04-github-security-overview-dependabot-webhooks.md` · `github-auth-errors.md` §AS · `github-scm.md`
+- [ ] Nota `notes/<nota>.md` · `github-auth-errors.md` §AS · `github-scm.md`
 
 ## 39. GraphQL securityVulnerabilities / overview filters (credenciais)
 
@@ -467,12 +466,12 @@ Itens **LAB** = observação Nexo/Guard; não doc oficial.
 - [ ] Nunca PAT no chat/YAML para “monitorar lodash” ou “aplicar filtro overview”
 - [ ] Compromisso → revoke + rotate (§6 / IR §13)
 - [ ] Cruzar §38/§AS overview/webhooks · §37/§AR GraphQL assign · §36/§AQ REST GAD · §W/§Z Dependabot
-- [ ] Nota `notes/2026-09-28-05-github-securityvulnerabilities-package-monitor-overview-filters.md` · `github-auth-errors.md` §AT · `github-scm.md`
+- [ ] Nota `notes/<nota>.md` · `github-auth-errors.md` §AT · `github-scm.md`
 
 ## 40. Secret scanning PP metrics / delegated bypass (credenciais)
 
 - [ ] Insights Secret scanning / Detection “bypassed or blocked” = **UI** — sem mintar classic/FG só para posture
-- [ ] Requests Push protection bypass = **UI first**; Approve só com autorização Bruno + plano revoke/rotate
+- [ ] Requests Push protection bypass = **UI first**; Approve só com autorização do dono + plano revoke/rotate
 - [ ] Automação list/review: App ou FG/custom role reviewer — classic `security_events` último
 - [ ] Exempt actors = risco de leak; só migration/service bots confiáveis (DOC WARNING)
 - [ ] Bypass aprovado sem revoke = leak aceito — cruzar §O remediação + §AE Close as Revoked
@@ -481,13 +480,13 @@ Itens **LAB** = observação Nexo/Guard; não doc oficial.
 - [ ] Nunca PAT no chat/YAML para “ver métricas SS” ou “PATCH bypass”
 - [ ] Compromisso → revoke + rotate (§6 / IR §13)
 - [ ] Cruzar §39/§AT filters · §38/§AS overview · §O PP · §AE SS triage · §AD validity
-- [ ] Nota `notes/2026-09-28-06-github-secret-scanning-push-protection-metrics-delegated-bypass.md` · `github-auth-errors.md` §AU · `github-scm.md`
+- [ ] Nota `notes/<nota>.md` · `github-auth-errors.md` §AU · `github-scm.md`
 
 
 ## 41. CodeQL PR metrics / Autofix MTTR / Prevention (credenciais)
 
 - [ ] Insights CodeQL pull requests / Prevention / Export CSV = **UI** — sem mintar classic/FG só para posture/MTTR
-- [ ] Métricas Autofix só onde Autofix enabled; agentic assign só com autorização Bruno + credits/policy
+- [ ] Métricas Autofix só onde Autofix enabled; agentic assign só com autorização do dono + credits/policy
 - [ ] Automação CS alerts (não métricas PR): App ou FG `code_scanning_alerts` — classic `security_events`/`repo` último
 - [ ] Sem REST dedicado DOC para métricas PR — não inventar endpoint; CSV via UI
 - [ ] Disable Autofix = policy (enterprise/org/repo); não precisa PAT
@@ -495,7 +494,7 @@ Itens **LAB** = observação Nexo/Guard; não doc oficial.
 - [ ] Compliance → audit log (não dashboard)
 - [ ] Compromisso → revoke + rotate (§6 / IR §13)
 - [ ] Cruzar §40/§AU SS PP metrics · §38/§AS overview · §28/§AI Autofix triage · §AF–§AH CodeQL setup
-- [ ] Nota `notes/2026-09-28-07-github-codeql-pr-metrics-autofix-mttr.md` · `github-auth-errors.md` §AV · `github-scm.md`
+- [ ] Nota `notes/<nota>.md` · `github-auth-errors.md` §AV · `github-scm.md`
 
 
 ## 42. Production context / linked artifacts / custom props (credenciais)
@@ -503,12 +502,12 @@ Itens **LAB** = observação Nexo/Guard; não doc oficial.
 - [ ] Filtros production context (`artifact-registry*`, `has:deployment`, `runtime-risk`) e `props.*` = **UI** — sem mintar classic/FG só para posture
 - [ ] Upload metadata: App ou `GITHUB_TOKEN` + `permissions.artifact-metadata: write` — **não** PAT classic no YAML
 - [ ] List records: App ou FG `artifact-metadata:read` curto — classic último
-- [ ] MDC / JFrog / Dynatrace = integrações org (preview MDC) — conectar só com autorização Bruno
+- [ ] MDC / JFrog / Dynatrace = integrações org (preview MDC) — conectar só com autorização do dono
 - [ ] Custom properties = org Settings UI / Apps com permissão custom properties — sem classic “para props”
 - [ ] Nunca PAT no chat/YAML para “filtrar internet-exposed” ou “POST storage-record”
 - [ ] Compromisso → revoke + rotate (§6 / IR §13)
 - [ ] Cruzar §41/§AV CodeQL PR · §40/§AU SS PP · §38/§AS overview · §39/§AT filters · §31/§AL campaigns · §14/§U attestations
-- [ ] Nota `notes/2026-09-28-08-github-production-context-linked-artifacts-props-filters.md` · `github-auth-errors.md` §AW · `github-scm.md`
+- [ ] Nota `notes/<nota>.md` · `github-auth-errors.md` §AW · `github-scm.md`
 
 
 ## 43. Rulesets deployable/deployed / remove artifacts status (credenciais)
@@ -521,7 +520,7 @@ Itens **LAB** = observação Nexo/Guard; não doc oficial.
 - [ ] Nunca PAT no chat/YAML para “proteger repos deployed” ou “POST /orgs/.../rulesets”
 - [ ] Compromisso → revoke + rotate (§6 / IR §13)
 - [ ] Cruzar §42/§AW production context · §21/§AB rulesets Dependabot · §29/§AJ CS merge · §11/§R environments · §14/§U attestations
-- [ ] Nota `notes/2026-09-28-09-github-rulesets-deployable-deployed-remove-artifacts.md` · `github-auth-errors.md` §AX · `github-scm.md`
+- [ ] Nota `notes/<nota>.md` · `github-auth-errors.md` §AX · `github-scm.md`
 
 
 ## 44. Push rulesets / bypass actors / enforcement (credenciais)
@@ -534,7 +533,7 @@ Itens **LAB** = observação Nexo/Guard; não doc oficial.
 - [ ] Nunca PAT no chat/YAML para “POST /rulesets” ou “adicionar bypass DeployKey”
 - [ ] Compromisso → revoke + rotate (§6 / IR §13)
 - [ ] Cruzar §43/§AX deployable targeting · §29/§AJ CS merge · §21/§AB ruleset DR · §8/§O · §40/§AU SS PP (≠ push ruleset)
-- [ ] Nota `notes/2026-09-28-10-github-push-rulesets-bypass-actors-enforcement.md` · `github-auth-errors.md` §AY · `github-scm.md`
+- [ ] Nota `notes/<nota>.md` · `github-auth-errors.md` §AY · `github-scm.md`
 
 
 ## 45. Ruleset recipes / JSON import / Rule Insights (credenciais)
@@ -549,9 +548,9 @@ Itens **LAB** = observação Nexo/Guard; não doc oficial.
 - [ ] Nunca PAT no chat/YAML para “importar recipe” ou “GET rule-suites”
 - [ ] Compromisso → revoke + rotate (§6 / IR §13)
 - [ ] Cruzar §44/§AY push+bypass · §43/§AX deployable · §29/§AJ CS merge · §40/§AU SS PP delegated (≠ push)
-- [ ] Nota `notes/2026-09-28-11-github-ruleset-recipes-json-import-rule-insights.md` · `github-auth-errors.md` §AZ · `github-scm.md`
+- [ ] Nota `notes/<nota>.md` · `github-auth-errors.md` §AZ · `github-scm.md`
 
-## Baseline 2026-10-05
-- Ver `notes/2026-10-05-github-seguranca-baseline.md` (estado pós-limpeza; zero PATs; política sem PAT clássico no box).
+## Baseline AAAA-MM-DD
+- Ver `notes/<nota>.md` (estado pós-limpeza; zero PATs; política sem PAT clássico no box).
 
-- Baseline viva: `baseline/github-baseline-20261005.md` (2FA ON ~11:40; alertar desvio).
+- Baseline viva: `baseline/github-baseline-AAAAMMDD.md` (2FA ON ~11:40; alertar desvio).

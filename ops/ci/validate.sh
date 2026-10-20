@@ -13,11 +13,11 @@ grep -q 'https://' state/fontes.md || fail "fontes.md sem URL"
 # 3. scripts boot executáveis em sh -n
 for f in ops/boot/*.sh; do
   [ -f "$f" ] || continue
-  sh -n "$f" || fail "sintaxe: $f"
+  bash -n "$f" || fail "sintaxe: $f"
 done
 
 # 4. netmon.sh sintaxe
-sh -n ops/netmon/netmon.sh || fail "sintaxe: netmon.sh"
+bash -n ops/netmon/netmon.sh || fail "sintaxe: netmon.sh"
 
 # 5. dashboard.py compila
 python3 -m py_compile ops/dashboard/dashboard.py || fail "dashboard.py"

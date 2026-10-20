@@ -1,6 +1,6 @@
 # Checklist — identidade e conta Google
 
-## Base (overview 2026-09-15)
+## Base (overview AAAA-MM-DD)
 
 - [ ] Security Checkup feito (myaccount.google.com → Security / security-checkup) — [12629482](https://support.google.com/accounts/answer/12629482)
 - [ ] 2SV ligado; segundo fator preferencial: passkey / security key / Google Prompt / Authenticator (evitar SMS se possível) — [185839](https://support.google.com/accounts/answer/185839); CERT.br fascículo Autenticação
@@ -16,7 +16,7 @@
 - [ ] Play / Pay: métodos de pagamento e compras reconhecidos — [6294825](https://support.google.com/accounts/answer/6294825)
 - [ ] Sem ADB / sem bridge: não afirmar estado de contas no aparelho nem 2SV “no telefone” — só via myaccount / UI
 
-## NOVOS (aprofundamento 2026-09-18-15 — fontes oficiais)
+## NOVOS (aprofundamento AAAA-MM-DD-15 — fontes oficiais)
 
 - [ ] **NOVO** Ao auditar devices: tratar **sessões** separadas (browser novo, reauth, OAuth grant, incognito) como normais no mesmo aparelho; se dúvida no mesmo nome → Sign out em **todas** as sessões — [3067630](https://support.google.com/accounts/answer/3067630)
 - [ ] **NOVO** Não alarmar só pelo horário “recente”: timestamp = última **comunicação** (inclui sync background) — [3067630](https://support.google.com/accounts/answer/3067630)
@@ -29,7 +29,7 @@
 - [ ] **NOVO** Notificação Android “Did you just sign in?”: No → sign-out em outros devices — [7305876](https://support.google.com/accounts/answer/7305876)
 
 
-## NOVOS (aprofundamento 2026-09-19-13 — APP / 2SV keys / prompts / Authenticator / backup codes)
+## NOVOS (aprofundamento AAAA-MM-DD-13 — APP / 2SV keys / prompts / Authenticator / backup codes)
 
 - [ ] **NOVO** Distinguir 2SV “forte” (prompt/Authenticator/key/passkey) de **Advanced Protection Program** (obriga passkey/security key + restringe apps sensíveis + download checks + recovery apertado) — [7519408](https://support.google.com/accounts/answer/7519408); [7539956](https://support.google.com/accounts/answer/7539956)
 - [ ] **NOVO** Antes de considerar APP: recovery phone+email sob seu controle; 2SV on; backup passkey/key; listar apps que leem Gmail/Drive (podem quebrar) — [7539956](https://support.google.com/accounts/answer/7539956)
@@ -46,10 +46,10 @@
 - [ ] **NOVO** Sem bridge/ADB: não afirmar se APP/2SV/keys estão ativos nas contas ou no dispositivo Android — só myaccount / UI
 
 
-## NOVOS (aprofundamento 2026-09-20-19 — passkeys operacionais / at-risk / recovery)
+## NOVOS (aprofundamento AAAA-MM-DD-19 — passkeys operacionais / at-risk / recovery)
 
-**Nota:** `notes/2026-09-20-19-google-passkeys-at-risk-recovery.md`  
-Fontes: [13548313](https://support.google.com/accounts/answer/13548313) · [17137073](https://support.google.com/accounts/answer/17137073) · [183723](https://support.google.com/accounts/answer/183723) · [7682439](https://support.google.com/accounts/answer/7682439) (acesso **2026-09-20**)
+**Nota:** `notes/<nota>.md`  
+Fontes: [13548313](https://support.google.com/accounts/answer/13548313) · [17137073](https://support.google.com/accounts/answer/17137073) · [183723](https://support.google.com/accounts/answer/183723) · [7682439](https://support.google.com/accounts/answer/7682439) (acesso **AAAA-MM-DD**)
 
 - [ ] **NOVO** Passkeys só em devices pessoais; shared device = quem unlock acessa a conta — [13548313](https://support.google.com/accounts/answer/13548313)
 - [ ] **NOVO** Inventário `myaccount.google.com/signinoptions/passkeys`; Remove em perdido/compartilhado; auto-passkey Android → Sign out do device se preciso — [13548313](https://support.google.com/accounts/answer/13548313)
@@ -60,25 +60,25 @@ Fontes: [13548313](https://support.google.com/accounts/answer/13548313) · [1713
 - [ ] **NOVO** Recovery phone **≠** Google Voice; recovery email ≠ sign-in; contacts só confiança (request 7d + wait 7d pós-aceite) — [183723](https://support.google.com/accounts/answer/183723)
 - [ ] **NOVO** Selfie recovery: indisponível sob APP / Workspace / Child — [183723](https://support.google.com/accounts/answer/183723)
 - [ ] **NOVO** Lockout: account recovery oficial; Google **não** liga/ajuda por telefone; recusar “serviços recovery” de terceiros — [7682439](https://support.google.com/accounts/answer/7682439)
-- [ ] **NOVO** Sem myaccount UI: não afirmar se passkeys/Skip/at-risk/recovery estão configurados nas contas Bruno
+- [ ] **NOVO** Sem myaccount UI: não afirmar se passkeys/Skip/at-risk/recovery estão configurados nas contas do dono
 
 
-## NOVOS (aprofundamento 2026-09-21-02 — Security Checkup / Recommended actions)
+## NOVOS (aprofundamento AAAA-MM-DD-02 — Security Checkup / Recommended actions)
 
-**Nota:** `notes/2026-09-21-02-certbr-notificacoes-ia-security-checkup.md`  
-Fontes: [12629482](https://support.google.com/accounts/answer/12629482) · [46526](https://support.google.com/accounts/answer/46526) (acesso **2026-09-21**)
+**Nota:** `notes/<nota>.md`  
+Fontes: [12629482](https://support.google.com/accounts/answer/12629482) · [46526](https://support.google.com/accounts/answer/46526) (acesso **AAAA-MM-DD**)
 
 - [ ] **NOVO** Security Checkup regularmente; entrada perfil → Recommended actions (ou Security & sign-in) — [12629482](https://support.google.com/accounts/answer/12629482); [46526](https://support.google.com/accounts/answer/46526)
 - [ ] **NOVO** Cores Recommended actions: azul=tips · amarelo=importante · vermelho=urgente; shield verde+check = saudável — [46526](https://support.google.com/accounts/answer/46526)
 - [ ] **NOVO** Checkup Step 1 cobre: recovery · passkey · 2SV (keys/prompts > SMS) · APP se alvo · Remove risky app access · screen locks — [46526](https://support.google.com/accounts/answer/46526)
 - [ ] **NOVO** Password Checkup + Password Alert no Chrome; Google nunca pede senha por e-mail/ligação/mensagem — [46526](https://support.google.com/accounts/answer/46526)
-- [ ] **NOVO** Sem myaccount: não afirmar se Checkup/cores estão limpos nas contas Bruno
+- [ ] **NOVO** Sem myaccount: não afirmar se Checkup/cores estão limpos nas contas do dono
 
 
-## NOVOS (aprofundamento 2026-09-21-09 — CERT.br Autenticação fascículo)
+## NOVOS (aprofundamento AAAA-MM-DD-09 — CERT.br Autenticação fascículo)
 
-**Nota:** `notes/2026-09-21-09-certbr-autenticacao.md`  
-**Fonte:** [fascículo Autenticação](https://cartilha.cert.br/fasciculos/autenticacao/fasciculo-autenticacao.pdf) (nov/2022; pdftotext `_src/autenticacao.pdf`; acesso **2026-09-21**)
+**Nota:** `notes/<nota>.md`  
+**Fonte:** [fascículo Autenticação](https://cartilha.cert.br/fasciculos/autenticacao/fasciculo-autenticacao.pdf) (nov/2022; pdftotext `_src/autenticacao.pdf`; acesso **AAAA-MM-DD**)
 
 - [ ] **NOVO** 2SV on em contas críticas; hierarquia CERT.br: chave física U2F/FIDO/FIDO2 (ou celular como chave) > app TOTP > SMS/voz **só** se não houver outra opção
 - [ ] **NOVO** Sem 2SV no serviço: reforçar senha única + forte + armazenamento seguro (não relaxar)
@@ -95,12 +95,12 @@ Fontes: [12629482](https://support.google.com/accounts/answer/12629482) · [4652
 - [ ] **NOVO** Não comprometer senha: links/QR só de fonte confiável; apps atualizados; sem digitar em equipamento de terceiros; HTTPS; shoulder-surfing/câmeras
 - [ ] **NOVO** Contatos 2SV atualizados + e-mail/telefone **alternativos** para códigos
 - [ ] **NOVO** Trusted device perdido/trocado → excluir nos serviços; chave física segura (perda → avisar serviço)
-- [ ] **NOVO** Sem myaccount/UI: não afirmar se 2SV/backup/IdP/alertas estão configurados nas contas Bruno
+- [ ] **NOVO** Sem myaccount/UI: não afirmar se 2SV/backup/IdP/alertas estão configurados nas contas do dono
 
 
-## CERT.br Computadores / Trabalho Remoto — deltas conta (2026-09-21)
+## CERT.br Computadores / Trabalho Remoto — deltas conta (AAAA-MM-DD)
 
-**Notas:** `2026-09-21-12-…` · `2026-09-21-13-…`
+**Notas:** `<nota>` · `<nota>`
 
 - [ ] **NOVO** Lock PC: senha/biometria; exigir auth em screensaver/repouso; timeout mínimo
 - [ ] **NOVO** Conta diária ≠ admin; 2SV na conta ID do sistema (Apple/Microsoft)

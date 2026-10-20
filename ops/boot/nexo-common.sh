@@ -1,14 +1,14 @@
 #!/bin/bash
 # nexo-common.sh — funções compartilhadas por nexo-up.sh e nexo-status.sh. Só leitura aqui.
-OPS=/home/box/agent-data/nexo/ops
-SOCK=/home/box/.local/run/vpnd.sock
+OPS=${NEXO_OPS:-$HOME/nexo/ops}
+SOCK=$HOME/.local/run/vpnd.sock
 TS_STATEDIR=/var/lib/vpn
 TS_TUN=vpn0
-TS_LOG=/home/box/.local/log/vpnd.log
+TS_LOG=$HOME/.local/log/vpnd.log
 AGH_DIR=/opt/AdGuardHome
 AGH_LOG=/var/log/adguardhome.log
 AGH_PID=/run/adguardhome.pid
-TS_IP=${VPN_IP_PC:-<VPN_IP_PC>}          # IP VPN do nexo-box (AdGuard faz bind nele)
+TS_IP=${VPN_IP_PC:-<VPN_IP_PC>}          # IP VPN do servidor (AdGuard faz bind nele)
 GUARD_SCRIPT=$OPS/nexo-ts-guard.sh
 GUARD_JUMP="-A INPUT -i vpn0 -j nexo-ts-guard"
 

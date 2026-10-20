@@ -1,7 +1,7 @@
-# Dashboard de segurança da casa do Bruno (somente leitura)
+# Dashboard de segurança da casa (somente leitura)
 
 Gera um **PNG de 1200 px de largura** (dá para ler no celular), mais um resumo JSON, com o estado **ao vivo** de:
-VPN, AdGuard Home, dispositivo Android, o computador do Nexo (nexo-box) e as pendências do último relatório de auditoria do dispositivo Android.
+VPN, AdGuard Home, dispositivo Android, o computador do Nexo (servidor) e as pendências do último relatório de auditoria do dispositivo Android.
 
 **Regra principal:** nenhum valor é inventado. Tudo vem de uma checagem feita na hora da geração.
 Se uma checagem falha ou não existe, o painel mostra **"indisponível — motivo"** e lista o item em "Checagens indisponíveis".
@@ -9,8 +9,8 @@ O painel não mostra senhas nem chaves privadas. Das chaves SSH aparecem só as 
 
 ## Como rodar
 ```bash
-/home/box/agent-data/nexo/ops/dashboard/dashboard.sh                 # coleta + PNG + JSON (~10–40 s)
-DASH_NO_ANDROID=1 /home/box/agent-data/nexo/ops/dashboard/dashboard.sh # sem SSH no dispositivo Android (o netmon também pula o dispositivo Android)
+~/nexo/ops/dashboard/dashboard.sh                 # coleta + PNG + JSON (~10–40 s)
+DASH_NO_ANDROID=1 ~/nexo/ops/dashboard/dashboard.sh # sem SSH no dispositivo Android (o netmon também pula o dispositivo Android)
 ```
 - **Código de saída:** 0 = PNG gerado; 2 = coleta feita mas PNG falhou (o JSON é gravado mesmo assim, com `render_error`); 1 = outra geração em andamento.
 - **Na tela:** imprime o nível geral, os alertas e as checagens indisponíveis.
@@ -59,7 +59,7 @@ DASH_NO_ANDROID=1 /home/box/agent-data/nexo/ops/dashboard/dashboard.sh # sem SSH
 ### VPN
 | Campo | Fonte |
 |---|---|
-| estado, versão, rede VPN, MagicDNS, dispositivos (online, IP, SO, direta/relay, último handshake ou "visto por último") | `vpn --socket=/home/box/.local/run/vpnd.sock status --json` |
+| estado, versão, rede VPN, MagicDNS, dispositivos (online, IP, SO, direta/relay, último handshake ou "visto por último") | `vpn --socket=~/.local/run/vpnd.sock status --json` |
 | DNS global, DNS dividido, DNS do sistema | `vpn … dns status --json` (configuração que o servidor de coordenação entrega a este nó) |
 | "Use VPN DNS" neste computador | `vpn … debug prefs` → `CorpDNS`. Só campos inofensivos são lidos; o bloco `Config` com chaves é descartado |
 | "Override local DNS" | **não é exposto** pela CLI local, por isso aparece como tal |
@@ -76,7 +76,7 @@ A API é `http://<VPN_IP_PC>:3000`. A senha é lida de `../secrets/adguard-admin
 O IP de cliente é anonimizado (`anonymize_client_ip`, em `/control/querylog/config`). Por isso `<ANON_CLIENT_ANDROID>` = faixa do dispositivo Android e `<ANON_CLIENT_PC>` = faixa do box.
 
 ### dispositivo Android (SSH somente leitura)
-Conexão: `ssh -i ~/.ssh/nexo_box_to_android -p 8022 -o BatchMode=yes -o ConnectTimeout=8 <ANDROID_USER>@<VPN_IP_ANDROID>`.
+Conexão: `ssh -i ~/.ssh/id_ed25519_android -p 8022 -o BatchMode=yes -o ConnectTimeout=8 <ANDROID_USER>@<VPN_IP_ANDROID>`.
 
 | Campo | Fonte |
 |---|---|
@@ -88,7 +88,7 @@ Conexão: `ssh -i ~/.ssh/nexo_box_to_android -p 8022 -o BatchMode=yes -o Connect
 | bateria | `termux-battery-status`, se existir |
 | rede e nº de apps de terceiros | snapshot do netmon (`ifconfig` e `pm list packages -3`) |
 
-### Meu computador (nexo-box)
+### Meu computador (servidor)
 | Campo | Fonte |
 |---|---|
 | VPN, firewall (regra `-i vpn0 -j nexo-ts-guard` no topo do INPUT em iptables e ip6tables, portas liberadas, DROP final), processo do AdGuard (PID de `/run/adguardhome.pid`, binário, portas em escuta), teste DNS (example.com resolve, doubleclick.net = 0.0.0.0) | snapshot do netmon (`sudo -n iptables -S`, `ss -tulnp`, `dig`) |
@@ -100,7 +100,7 @@ Conexão: `ssh -i ~/.ssh/nexo_box_to_android -p 8022 -o BatchMode=yes -o Connect
 O painel **não** reaplica o firewall (`nexo-ts-guard.sh`).
 
 ### Pendências da auditoria
-- **Fonte:** o relatório `*-auditoria-android.md` mais recente em `/home/box/agent-data/nexo/ops/`. Hoje é o `2026-10-04-auditoria-android.md`.
+- **Fonte:** o relatório `*-auditoria-android.md` mais recente em `~/nexo/ops/`. Hoje é o `<nota>`.
 - **O que é extraído:** os itens da seção "6. Riscos priorizados" (severidade, título, ação sugerida) e as linhas com "falta conferir".
 - **Rótulo:** todos os itens vêm marcados como **"do relatório de DD/MM/AAAA"**.
 - **Checagem ao vivo:** onde dá, o item ganha uma checagem feita agora, marcada "ao vivo":
