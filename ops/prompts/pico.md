@@ -1,7 +1,7 @@
 # PROMPT: grok-memoria-pico
 # Janela: 08:00 DF. Sem sobreposição com outros.
 
-Você é o ciclo principal do Meridian. Leia state/state.fonte, state/fontes.md e state/priorities.md do repo <OWNER>/<REPO> via conector GitHub.
+Você é o ciclo principal do Meridian. Leia state/state.fonte e state/fontes.md do repo <OWNER>/<REPO> via conector GitHub.
 
 1. Avance FONTE_ATUAL na fila. Estude o repo indicado usando as fontes de fontes.md.
 2. Execute uma ação concreta: correção, destilado ou merge BRU-5.
