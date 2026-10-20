@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""dashboard.py — coleta AO VIVO + renderiza o painel de segurança do Bruno (pt-BR).
+"""dashboard.py — coleta AO VIVO + renderiza o painel de segurança do dono (pt-BR).
 
 Chamado por dashboard.sh. Regras:
   * nenhum valor é inventado: tudo vem de uma checagem feita agora; se falhar -> "indisponível" + motivo;
@@ -10,22 +10,22 @@ import base64, datetime as dt, glob, html, json, os, re, shutil, subprocess, sys
 from zoneinfo import ZoneInfo
 
 TZ = ZoneInfo("America/Sao_Paulo")
-OPS = "/home/box/agent-data/nexo/ops"
+OPS = os.path.expanduser("~/nexo/ops") + ""
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(HERE, "out")
 NETMON = os.path.join(OPS, "netmon", "netmon.sh")
 SECRET_FILE = os.path.join(OPS, "secrets", "adguard-admin.txt")
-TS_SOCK = "/home/box/.local/run/vpnd.sock"
-BOX_IP, BOX_NAME = os.environ.get("VPN_IP_PC", "<VPN_IP_PC>"), "nexo-box"
+TS_SOCK = os.path.expanduser("~/") + ".local/run/vpnd.sock"
+BOX_IP, BOX_NAME = os.environ.get("VPN_IP_PC", "<VPN_IP_PC>"), "servidor"
 ANDROID_IP, ANDROID_PEER = os.environ.get("VPN_IP_ANDROID", "<VPN_IP_ANDROID>"), "android-device"
-ANDROID_SSH = ["ssh", "-i", "/home/box/.ssh/nexo_box_to_android", "-p", "8022", "-o", "BatchMode=yes",
+ANDROID_SSH = ["ssh", "-i", os.path.expanduser("~/") + ".ssh/id_ed25519_android", "-p", "8022", "-o", "BatchMode=yes",
              "-o", "ConnectTimeout=8", "-o", "StrictHostKeyChecking=yes", "-o", "LogLevel=ERROR",
              f"{os.environ.get('ANDROID_SSH_USER', '<ANDROID_USER>')}@{ANDROID_IP}"]
-BOX_KEY = "/home/box/.ssh/nexo_box_to_android"
+BOX_KEY = os.path.expanduser("~/") + ".ssh/id_ed25519_android"
 AGH = f"http://{BOX_IP}:3000"
 ANON_ANDROID = os.environ.get("ANON_CLIENT_ANDROID", "<ANON_CLIENT_ANDROID>")
 ANON_PC = os.environ.get("ANON_CLIENT_PC", "<ANON_CLIENT_PC>")
-CLIENT_LABEL = {ANON_ANDROID: "dispositivo Android (anonimizado /16)", ANON_PC: "nexo-box (anonimizado /16)"}
+CLIENT_LABEL = {ANON_ANDROID: "dispositivo Android (anonimizado /16)", ANON_PC: "servidor (anonimizado /16)"}
 KEEP_PNGS = 14
 SECURITY_AUDIT = os.path.join(HERE, "security-audit-latest.json")
 NOW = dt.datetime.now(TZ)
@@ -701,7 +701,7 @@ def render(nm, ts, ag, rd, bx, au, alerts, unavailable, pend, sections, overall,
     # ---------- cabeçalho ----------
     cnt = {k: sum(1 for a in alerts if a["level"] == k) for k in ("red", "amber", "info")}
     head = {"red": "Há alertas críticos", "amber": "Há pontos de atenção", "green": "Tudo verde"}[overall]
-    parts.append(f'''<header class="hd {overall}"><div><div class="t1">Painel de segurança · casa do Bruno</div>
+    parts.append(f'''<header class="hd {overall}"><div><div class="t1">Painel de segurança · casa</div>
       <div class="t2">{E(head)}</div></div><div class="cnt"><span class="pill r">{cnt["red"]} críticos</span>
       <span class="pill a">{cnt["amber"]} atenção</span><span class="pill i">{cnt["info"]} info</span></div></header>''')
     # ---------- alertas ----------
@@ -857,7 +857,7 @@ def render(nm, ts, ag, rd, bx, au, alerts, unavailable, pend, sections, overall,
     if bx.get("uptime_s") is not None:
         up = bx["uptime_s"]
         rows.append(("Ligado há", (f"{int(up // 86400)} d " if up >= 86400 else "") + f"{int(up % 86400 // 3600)} h {int(up % 3600 // 60)} min"))
-    parts.append(card("Meu computador (nexo-box)", sections["Meu computador"], kv(rows)))
+    parts.append(card("Meu computador (servidor)", sections["Meu computador"], kv(rows)))
 
     # ---------- Pendências ----------
     if au.get("ok"):

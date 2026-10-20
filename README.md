@@ -1,11 +1,11 @@
 # nexo-mobile-ops
 
-Playbook da ponte entre o dispositivo Android do Bruno e o computador do Nexo. Repositório privado, recriado limpo em 2026-10-04 (o anterior foi apagado e tinha um token exposto no histórico; não restaurar).
+Playbook da ponte entre o dispositivo Android do dono e o computador do Nexo. Repositório privado, recriado limpo em AAAA-MM-DD (o anterior foi apagado e tinha um token exposto no histórico; não restaurar).
 
 ## Regras
 - Nunca commitar segredos (tokens, senhas, `.cursor/mcp.json`, chaves privadas). Senhas ficam só no computador do Nexo, em arquivo 600.
 - Não forkar repos oficiais na conta; só dar star.
-- Mudanças no telefone (DNS, revogação, apagar máquina) só com autorização explícita do Bruno.
+- Mudanças no telefone (DNS, revogação, apagar máquina) só com autorização explícita do dono.
 - Só registrar aqui o que foi verificado ao vivo, com data.
 
 ## Conteúdo
@@ -18,9 +18,9 @@ Playbook da ponte entre o dispositivo Android do Bruno e o computador do Nexo. R
 ## Caminho escolhido
 VPN sempre ligado + terminal Android com `sshd` (porta 8022) + Tasker e terminal Android:Tasker para automação local. USB/Mac só em emergência. Shizuku só se precisar de shell elevado. O dispositivo Android não tem root.
 
-## Estado verificado em 2026-10-04
+## Estado verificado em AAAA-MM-DD
 
-### Computador do Nexo (`nexo-box`, VPN <VPN_IP_PC>)
+### Computador do Nexo (`servidor`, VPN <VPN_IP_PC>)
 - VPN, conta `<EMAIL>`. Sem systemd: nada volta sozinho após reinício.
 - Firewall `nexo-ts-guard` (iptables e ip6tables) na interface `vpn0`: libera 53 udp/tcp, 3000 tcp e ICMP; o resto é DROP. Reaplicar com `nexo-ts-guard.sh`.
 - AdGuard Home v0.107.79 (sha256 conferido), escutando só em <VPN_IP_PC>:53 e :3000.
@@ -29,7 +29,7 @@ VPN sempre ligado + terminal Android com `sshd` (porta 8022) + Tasker e terminal
 
 ### dispositivo Android (`android-device`, VPN <VPN_IP_ANDROID> quando online)
 - terminal Android instalado, `termux-auth` 1.5.0-1 com senha definida.
-- SSH: `PasswordAuthentication no`; única chave em `~/.ssh/authorized_keys` é a ed25519 do computador do Nexo (`nexo_box_to_android`).
+- SSH: `PasswordAuthentication no`; única chave em `~/.ssh/authorized_keys` é a ed25519 do computador do Nexo (`id_ed25519_android`).
 - Tasker, terminal Android:Tasker e App Launcher ainda não instalados.
 - O dispositivo Android não aparece como máquina no Grok Bot; o acesso do Nexo é pelo VPN + SSH.
 
@@ -46,7 +46,7 @@ VPN sempre ligado + terminal Android com `sshd` (porta 8022) + Tasker e terminal
 1. Subir `vpnd` e `vpn up` na mesma conta.
 2. Reaplicar `nexo-ts-guard.sh`.
 3. Subir o AdGuard Home e conferir os testes de DNS acima.
-4. Testar: `ssh -i ~/.ssh/nexo_box_to_android -p 8022 -o BatchMode=yes <VPN_IP_ANDROID> 'echo ok'`.
+4. Testar: `ssh -i ~/.ssh/id_ed25519_android -p 8022 -o BatchMode=yes <VPN_IP_ANDROID> 'echo ok'`.
 
 ## Segurança
 - `sshd` só atrás da VPN; nunca expor 8022 na internet.

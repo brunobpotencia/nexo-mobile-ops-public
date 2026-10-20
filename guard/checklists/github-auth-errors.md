@@ -1,21 +1,20 @@
 # Checklist — GitHub auth errors (401 / 403 / 404 / 429) + secret injection
 
-**Atualizado:** 2026-09-27 ~22:46 BRT (PVR + repository advisories + security managers; nota `2026-09-27-23-github-private-vulnerability-reporting-repository-advisories.md`)
-**Nota:** `notes/2026-09-27-12-github-security-configurations-custom-patterns.md` · `notes/2026-09-27-11-github-dependabot-org-global-runner-private-access.md` · `notes/2026-09-27-10-github-arc-scale-sets-auth-ops.md` · `notes/2026-09-27-09-github-dependabot-auto-triage-multi-ecosystem.md` · `notes/2026-09-27-08-github-dependabot-version-updates-schedule-hygiene.md` · `notes/2026-09-20-01-github-pat-oauth-secret-injection.md` · **`notes/2026-09-27-07-github-dependabot-security-updates-grouped.md`** · **`notes/2026-09-27-05-github-immutable-releases-release-attestations.md`** · **`notes/2026-09-27-04-github-actions-artifact-attestations-compromised-runners.md`** · **`notes/2026-09-27-01-github-environment-secrets-protection-rules.md`** · **`notes/2026-09-26-12-github-actions-oidc-id-token-cloud-anti-pat.md`** · **`notes/2026-09-26-02-…`** · **`notes/2026-09-26-03-…`** · **`notes/2026-09-26-04-…`** · **`notes/2026-09-26-05-…`** · **`notes/2026-09-26-06-github-gcm-cache-sso-ssh-fg-agent-perms-agh-edge-1a.md`** · **`notes/2026-09-26-07-github-passkeys-2fa-checkup-sudo-recovery.md`** · **`notes/2026-09-26-08-agh-update-ops-edge-changelog-pat-reconfirm.md`** · **`notes/2026-09-26-09-github-fg-gaps-checks-vs-statuses-packages.md`** · **`notes/2026-09-26-10-github-push-protection-users-mcp-remediation.md`**  
-**Lab / postmortem:** `nexo/ops/2026-09-20-github-auth-lab.md`, `nexo/ops/2026-09-20-postmortem-por-que-travou.md`  
+**Nota:** `notes/<nota>.md` · `notes/<nota>.md` · `notes/<nota>.md` · `notes/<nota>.md` · `notes/<nota>.md` · `notes/<nota>.md` · **`notes/<nota>.md`** · **`notes/<nota>.md`** · **`notes/<nota>.md`** · **`notes/<nota>.md`** · **`notes/<nota>.md`** · **`notes/<nota>.md`** · **`notes/<nota>.md`** · **`notes/<nota>.md`** · **`notes/<nota>.md`** · **`notes/<nota>.md`** · **`notes/<nota>.md`** · **`notes/<nota>.md`** · **`notes/<nota>.md`** · **`notes/<nota>.md`**  
+**Lab / postmortem:** `nexo/ops/AAAA-MM-DD-github-auth-lab.md`, `nexo/ops/AAAA-MM-DD-postmortem-por-que-travou.md`  
 **Higiene geral SCM:** `checklists/github-scm.md` · extract `github-credenciais-higiene.md`
 
-Citações oficiais (acesso **2026-09-27** ~01:37):  
+Citações oficiais (acesso **AAAA-MM-DD** ~01:37):  
 [Managing PATs](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) · [Org PAT policy](https://docs.github.com/en/organizations/managing-programmatic-access-to-your-organization/setting-a-personal-access-token-policy-for-your-organization) · [Reviewing/revoking FG in org](https://docs.github.com/en/organizations/managing-programmatic-access-to-your-organization/reviewing-and-revoking-personal-access-tokens-in-your-organization) · [Privileged OAuth apps](https://docs.github.com/en/apps/oauth-apps/using-oauth-apps/privileged-oauth-apps) · [Token expiration](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/token-expiration-and-revocation) · [Authorizing OAuth apps](https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/authorizing-oauth-apps) · [Authenticating to REST](https://docs.github.com/en/rest/authentication/authenticating-to-the-rest-api) · [Rate limits](https://docs.github.com/en/rest/using-the-rest-api/rate-limits-for-the-rest-api) · [Troubleshooting REST](https://docs.github.com/en/rest/using-the-rest-api/troubleshooting-the-rest-api)
 
 Itens marcados **LAB** = observação Nexo/Guard na box; não são doc oficial.
 
-> **2026-10-05 (estado atual, fonte Nexo):** PATs classic/FG da conta = 0 (revogados); `GITHUB_TOKEN`/`GH_TOKEN`/`GITHUB_PERSONAL_ACCESS_TOKEN` removidos do `box-secrets.json`; 2FA ON. Os passos **LAB** abaixo que mandam usar/sobrescrever `GITHUB_PERSONAL_ACCESS_TOKEN` com classic `ghp_` são registro de 2026-09-20 — **não** reintroduzir PAT sem OK explícito do Bruno. Baseline: `/home/box/agent-data/nexo-guard/baseline/github-baseline-20261005.md`.
+> **AAAA-MM-DD (estado atual, fonte Nexo):** PATs classic/FG da conta = 0 (revogados); `GITHUB_TOKEN`/`GH_TOKEN`/`GITHUB_PERSONAL_ACCESS_TOKEN` removidos do `box-secrets.json`; 2FA ON. Os passos **LAB** abaixo que mandam usar/sobrescrever `GITHUB_PERSONAL_ACCESS_TOKEN` com classic `ghp_` são registro de AAAA-MM-DD — **não** reintroduzir PAT sem OK explícito do dono. Baseline: `<BASELINE_LOCAL>`.
 
-## Árvore de decisão (operacional — 2026-09-20)
+## Árvore de decisão (operacional — AAAA-MM-DD)
 
 1. **Canal?** Um só: MCP OAuth **ou** PAT env. Se xai sem a tool → não injeta PAT “pra criar tool” (**LAB**).
-1b. **Instrumento certo?** Script/teste pessoal → FG PAT; automação long-lived / multi-repo / org → **GitHub App** (não classic `repo` eterno). Cap 50 FG → App. Nota `2026-09-20-11-github-app-vs-pat-automation.md`.
+1b. **Instrumento certo?** Script/teste pessoal → FG PAT; automação long-lived / multi-repo / org → **GitHub App** (não classic `repo` eterno). Cap 50 FG → App. Nota `<nota>`.
 2. **Probe** `GET /user` (Bearer via env, sem echo):
    - **401** → credencial morta; fingerprint prefix+len; **2º idêntico → STOP**.
    - **200** → ir à ação alvo.
@@ -67,7 +66,7 @@ Probe: `GET https://api.github.com/user` (Bearer via env; **não** imprimir o to
 - [ ] Inventário: Developer settings → Fine-grained **e** Tokens (classic); apagar órfãos / classic `repo` amplo / sem expiração.
 - [ ] Fine-grained: um resource owner; **Only select repositories**; permissões mínimas; expiração 30–90 d; cap 50 tokens. Docs: *Managing PATs*.
 - [ ] Classic inevitável: scope mínimo; lembrar blast radius em **todos** os repos acessíveis. Docs: *Managing PATs*.
-- [ ] Create repo (`POST /user/repos`): classic precisa `public_repo` ou `repo`. Docs: *Create a repository for the authenticated user*. Fine-grained: **Administration write** (`POST /user/repos` na tabela *Permissions required for fine-grained PATs* — reconfirmado 2026-09-26; docs também agrupa sob heading “Repository creation”). Confirmar falha via `X-Accepted-GitHub-Permissions`. **LAB:** sem Administration → 403; token morto → 401 (não confundir). Nota `2026-09-20-06-github-fg-admin-create-repo.md`.
+- [ ] Create repo (`POST /user/repos`): classic precisa `public_repo` ou `repo`. Docs: *Create a repository for the authenticated user*. Fine-grained: **Administration write** (`POST /user/repos` na tabela *Permissions required for fine-grained PATs* — reconfirmado AAAA-MM-DD; docs também agrupa sob heading “Repository creation”). Confirmar falha via `X-Accepted-GitHub-Permissions`. **LAB:** sem Administration → 403; token morto → 401 (não confundir). Nota `<nota>`.
 - [ ] Expirado/revogado/deletado **não restaura** — criar novo. Docs: *Token expiration and revocation*.
 - [ ] Prefixos `ghp_` / `github_pat_` / `gho_` / `ghu_` / `ghs_` / `ghr_` = segredo. Docs: *About authentication* — token formats.
 - [ ] **LAB (desbloqueio):** se FG no env está 401, sobrescrever **`GITHUB_PERSONAL_ACCESS_TOKEN`** com classic `ghp_` válido (único nome observado que injeta) **ou** esperar 429 e reauth MCP oficial — um caminho.
@@ -88,11 +87,11 @@ Probe: `GET https://api.github.com/user` (Bearer via env; **não** imprimir o to
 
 ## E. OAuth MCP vs PAT (anti-loop)
 
-- [ ] **DOC:** OAuth app ≤**10** tokens por combinação user / application / **mesmo scope**; o 11º **revoga** um existente (unused >1 min → LRU → oldest). *Token expiration* — excess of tokens. Nota `2026-09-26-02-…`
+- [ ] **DOC:** OAuth app ≤**10** tokens por combinação user / application / **mesmo scope**; o 11º **revoga** um existente (unused >1 min → LRU → oldest). *Token expiration* — excess of tokens. Nota `<nota>`
 - [ ] **DOC:** criar **>10 tokens/h** (mesmo user/app/scope) **não** revoga oldest — dispara **re-authorization prompt** no browser (break de loop). Esperar ≥1 h; inventariar Authorized OAuth apps
-- [ ] **DOC:** tokens expiráveis — access **8 h**; refresh `ghr_` **6 meses sem uso**; refresh invalida o par antigo; opt-in runtime scope **`offline_access`**. *Authorizing OAuth apps*. Nota `2026-09-26-03-…`
-- [ ] **DOC:** device flow (CLI/GCM): poll sem `client_secret`; códigos **900 s**; respeitar `interval` / `slow_down` (+5 s); ≤**50** user-code submits/h/app. Nota `2026-09-26-03-…`
-- [ ] **DOC WARNING:** revogar **todas** as permissões de uma OAuth app **apaga** SSH keys geradas pela app, **incluindo deploy keys** — inventariar SSH/Deploy keys antes. Nota `2026-09-26-03-…`
+- [ ] **DOC:** tokens expiráveis — access **8 h**; refresh `ghr_` **6 meses sem uso**; refresh invalida o par antigo; opt-in runtime scope **`offline_access`**. *Authorizing OAuth apps*. Nota `<nota>`
+- [ ] **DOC:** device flow (CLI/GCM): poll sem `client_secret`; códigos **900 s**; respeitar `interval` / `slow_down` (+5 s); ≤**50** user-code submits/h/app. Nota `<nota>`
+- [ ] **DOC WARNING:** revogar **todas** as permissões de uma OAuth app **apaga** SSH keys geradas pela app, **incluindo deploy keys** — inventariar SSH/Deploy keys antes. Nota `<nota>`
 - [ ] **LAB:** force_reauth só se conector `needsAuth` **e** sem 429 recente **e** sem rajada de creates OAuth; nunca em loop
 - [ ] Se OAuth devolver HTML anômalo (“What‽”) → não martelar Settings; esperar e retry limpo (**LAB**)
 - [ ] Continuating requests sob rate limit pode piorar (docs: banimento de integração possível). *Rate limits* / *Troubleshooting*
@@ -108,15 +107,15 @@ Probe: `GET https://api.github.com/user` (Bearer via env; **não** imprimir o to
 
 ---
 
-## G. Security log após PAT / OAuth / SSH (2026-09-20)
+## G. Security log após PAT / OAuth / SSH (AAAA-MM-DD)
 
-**Nota:** `notes/2026-09-20-03-github-security-log-credenciais.md`  
-Fontes: [Reviewing your security log](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/reviewing-your-security-log) · [Security log events](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/security-log-events) · [Authorized OAuth apps](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/reviewing-your-authorized-applications-oauth) (acesso **2026-09-20**)
+**Nota:** `notes/<nota>.md`  
+Fontes: [Reviewing your security log](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/reviewing-your-security-log) · [Security log events](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/security-log-events) · [Authorized OAuth apps](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/reviewing-your-authorized-applications-oauth) (acesso **AAAA-MM-DD**)
 
 - [ ] Settings → Archives → **Security log** (90 d) — não é full-text; usar qualificadores / export JSON|CSV
 - [ ] Filtrar FG PAT: `action:personal_access_token.create` / `.update` / `.credential_regenerated` / `.destroy` / `.credential_revoked` / `.access_revoked`
 - [ ] Filtrar OAuth: `action:oauth_authorization.create|destroy` e `action:oauth_access.create|destroy|revoke`
-- [ ] Expire/revoke de **PAT** (além de OAuth/App) pode gerar `oauth_authorization.destroy` — cruzar com `personal_access_token.*` (Token expiration NOTE; nota `2026-09-26-05-…`)
+- [ ] Expire/revoke de **PAT** (além de OAuth/App) pode gerar `oauth_authorization.destroy` — cruzar com `personal_access_token.*` (Token expiration NOTE; nota `<nota>`)
 - [ ] Filtrar SSH/deploy/signing: `action:public_key.create|delete` e `action:git_signing_ssh_public_key.create|delete`
 - [ ] Filtrar conta: `action:user.failed_login`, `user.sign_in_from_unrecognized_device`, `passkey.*`, `two_factor_authentication.*`
 - [ ] Cruzar log com UI: Fine-grained **e** classic; SSH and GPG keys; Applications → Authorized OAuth/GitHub Apps
@@ -124,10 +123,10 @@ Fontes: [Reviewing your security log](https://docs.github.com/en/authentication/
 - [ ] `personal_access_token.credential_revoked` → tratar como vazamento (GHAS/secret scanning) até prova contrária
 - [ ] Push protection usuário: Settings → Code security → “Push protection for yourself” ligado
 
-## H. GitHub App vs PAT (escalar automação — 2026-09-20)
+## H. GitHub App vs PAT (escalar automação — AAAA-MM-DD)
 
-**Nota:** `notes/2026-09-20-11-github-app-vs-pat-automation.md`  
-Fontes: [Deciding when to build a GitHub App](https://docs.github.com/en/apps/creating-github-apps/about-creating-github-apps/deciding-when-to-build-a-github-app) · [Managing PATs](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) · [Best practices for creating a GitHub App](https://docs.github.com/en/apps/creating-github-apps/about-creating-github-apps/best-practices-for-creating-a-github-app) (acesso **2026-09-20**)
+**Nota:** `notes/<nota>.md`  
+Fontes: [Deciding when to build a GitHub App](https://docs.github.com/en/apps/creating-github-apps/about-creating-github-apps/deciding-when-to-build-a-github-app) · [Managing PATs](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) · [Best practices for creating a GitHub App](https://docs.github.com/en/apps/creating-github-apps/about-creating-github-apps/best-practices-for-creating-a-github-app) (acesso **AAAA-MM-DD**)
 
 - [ ] Teste / script curto / uso pessoal → fine-grained PAT (não classic)
 - [ ] Long-lived / org / multi-repo / bot persistente → **GitHub App** (installation token short-lived)
@@ -136,10 +135,10 @@ Fontes: [Deciding when to build a GitHub App](https://docs.github.com/en/apps/cr
 - [ ] App **nunca** autentica com PAT/senha do user (best practices)
 - [ ] Não “consertar” gap de tool MCP com classic `repo` amplo (**LAB** + WARNING Managing PATs)
 
-## I. Installation / Actions `ghs_` formato stateless (2026-09-20)
+## I. Installation / Actions `ghs_` formato stateless (AAAA-MM-DD)
 
-**Nota:** `notes/2026-09-20-15-github-app-ghs-stateless-token.md`  
-Fontes: [About authentication — token formats](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/about-authentication-to-github) · [Changelog 2026-04-24](https://github.blog/changelog/2026-04-24-notice-about-upcoming-new-format-for-github-app-installation-tokens/) · [Override header 2026-05-15](https://github.blog/changelog/2026-05-15-github-app-installation-tokens-per-request-override-header/) (acesso **2026-09-20**)
+**Nota:** `notes/<nota>.md`  
+Fontes: [About authentication — token formats](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/about-authentication-to-github) · [Changelog AAAA-MM-DD](https://github.blog/changelog/AAAA-MM-DD-notice-about-upcoming-new-format-for-github-app-installation-tokens/) · [Override header AAAA-MM-DD](https://github.blog/changelog/AAAA-MM-DD-github-app-installation-tokens-per-request-override-header/) (acesso **AAAA-MM-DD**)
 
 - [ ] Tratar `ghs_` / `GITHUB_TOKEN` como **opaco** — sem length==40; sem regex `ghs_[A-Za-z0-9]{36}`
 - [ ] Aceitar formato novo `ghs_APPID_JWT` (~520 chars, **dois** dots) e o opaco antigo (sem dots)
@@ -148,10 +147,10 @@ Fontes: [About authentication — token formats](https://docs.github.com/en/auth
 - [ ] Fingerprint LAB por length: **não** aplicar a `ghs_` (length varia); OK em `ghp_` / `github_pat_`
 - [ ] Extract higiene consolidado: `checklists/github-credenciais-higiene.md`
 
-## J. Org PAT policy / privileged OAuth / SSH que sobrevive (2026-09-26)
+## J. Org PAT policy / privileged OAuth / SSH que sobrevive (AAAA-MM-DD)
 
-**Nota:** `notes/2026-09-26-04-github-org-pat-policy-privileged-oauth-ssh-survive.md`  
-Fontes: [Org PAT policy](https://docs.github.com/en/organizations/managing-programmatic-access-to-your-organization/setting-a-personal-access-token-policy-for-your-organization) · [Reviewing/revoking FG in org](https://docs.github.com/en/organizations/managing-programmatic-access-to-your-organization/reviewing-and-revoking-personal-access-tokens-in-your-organization) · [Privileged OAuth apps](https://docs.github.com/en/apps/oauth-apps/using-oauth-apps/privileged-oauth-apps) · [SSO authorize PAT](https://docs.github.com/en/authentication/authenticating-with-saml-single-sign-on/authorizing-a-personal-access-token-for-use-with-saml-single-sign-on) (acesso **2026-09-26** ~15:40)
+**Nota:** `notes/<nota>.md`  
+Fontes: [Org PAT policy](https://docs.github.com/en/organizations/managing-programmatic-access-to-your-organization/setting-a-personal-access-token-policy-for-your-organization) · [Reviewing/revoking FG in org](https://docs.github.com/en/organizations/managing-programmatic-access-to-your-organization/reviewing-and-revoking-personal-access-tokens-in-your-organization) · [Privileged OAuth apps](https://docs.github.com/en/apps/oauth-apps/using-oauth-apps/privileged-oauth-apps) · [SSO authorize PAT](https://docs.github.com/en/authentication/authenticating-with-saml-single-sign-on/authorizing-a-personal-access-token-for-use-with-saml-single-sign-on) (acesso **AAAA-MM-DD** ~15:40)
 
 - [ ] **403** em org com PAT 200 em `/user` → checar Restrict policy · max lifetime · FG `pending` · SSO Configure/Authorize · linked identity
 - [ ] Org **Restrict** PAT: SSH keys **criadas por PATs continuam**; públicos da org ainda acessíveis
@@ -161,10 +160,10 @@ Fontes: [Org PAT policy](https://docs.github.com/en/organizations/managing-progr
 - [ ] Classic **não** passa por approval FG; Restrict classic é o controle correspondente
 - [ ] `copilot_requests` em template FG = billing/overage — só com pedido explícito
 
-## K. PAT CLI HTTPS / username / FG RO públicos / inactive (2026-09-26)
+## K. PAT CLI HTTPS / username / FG RO públicos / inactive (AAAA-MM-DD)
 
-**Nota:** `notes/2026-09-26-05-github-pat-cli-https-username-fg-public-ro-inactive.md`  
-Fontes: [Managing PATs](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) · [Token expiration](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/token-expiration-and-revocation) · [Revoking your credentials](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/revoking-your-credentials) (acesso **2026-09-26** ~16:38)
+**Nota:** `notes/<nota>.md`  
+Fontes: [Managing PATs](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) · [Token expiration](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/token-expiration-and-revocation) · [Revoking your credentials](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/revoking-your-credentials) (acesso **AAAA-MM-DD** ~16:38)
 
 - [ ] Git HTTPS: Password = PAT; **username não autentica** (vazio → inválido)
 - [ ] PAT **não** autentica remote SSH — trocar para HTTPS ou usar SSH key
@@ -174,10 +173,10 @@ Fontes: [Managing PATs](https://docs.github.com/en/authentication/keeping-your-a
 - [ ] Classic sem scopes = só info pública (ainda inventariar)
 - [ ] Danger zone Delete all = **só EMU**; Revoke all SSO ≠ apagar tokens
 
-## L. GCM / credential cache + SSO SSH revoke + FG Agent (2026-09-26)
+## L. GCM / credential cache + SSO SSH revoke + FG Agent (AAAA-MM-DD)
 
-**Nota:** `notes/2026-09-26-06-github-gcm-cache-sso-ssh-fg-agent-perms-agh-edge-1a.md`  
-Fontes: [Caching credentials](https://docs.github.com/en/get-started/git-basics/caching-your-github-credentials-in-git) · [SSO authorize PAT](https://docs.github.com/en/authentication/authenticating-with-saml-single-sign-on/authorizing-a-personal-access-token-for-use-with-saml-single-sign-on) · [SSO authorize SSH](https://docs.github.com/en/authentication/authenticating-with-saml-single-sign-on/authorizing-an-ssh-key-for-use-with-saml-single-sign-on) · [Permissions FG](https://docs.github.com/en/rest/authentication/permissions-required-for-fine-grained-personal-access-tokens) (acesso **2026-09-26** ~17:45)
+**Nota:** `notes/<nota>.md`  
+Fontes: [Caching credentials](https://docs.github.com/en/get-started/git-basics/caching-your-github-credentials-in-git) · [SSO authorize PAT](https://docs.github.com/en/authentication/authenticating-with-saml-single-sign-on/authorizing-a-personal-access-token-for-use-with-saml-single-sign-on) · [SSO authorize SSH](https://docs.github.com/en/authentication/authenticating-with-saml-single-sign-on/authorizing-an-ssh-key-for-use-with-saml-single-sign-on) · [Permissions FG](https://docs.github.com/en/rest/authentication/permissions-required-for-fine-grained-personal-access-tokens) (acesso **AAAA-MM-DD** ~17:45)
 
 - [ ] Git diário: **`gh auth login`** (HTTPS + autenticar Git **Y**) ou **GCM** antes de mintar PAT — GCM cobre OAuth/2FA
 - [ ] Git HTTPS 401 com PAT API OK → cache stale: Windows Credential Manager (apagar GitHub); macOS Keychain; Linux store GCM; limpar **após** Security log
@@ -190,10 +189,10 @@ Fontes: [Caching credentials](https://docs.github.com/en/get-started/git-basics/
 - [ ] FG: não mintar **Agent secrets/variables**, Attestations write, Copilot Spaces/agent settings sem intenção (Permissions FG)
 - [ ] Gaps FG reconfirmados inalterados; cap 50
 
-## M. Passkeys / 2FA checkup / sudo / recovery (2026-09-26)
+## M. Passkeys / 2FA checkup / sudo / recovery (AAAA-MM-DD)
 
-**Nota:** `notes/2026-09-26-07-github-passkeys-2fa-checkup-sudo-recovery.md`  
-Fontes: [About passkeys](https://docs.github.com/en/authentication/authenticating-with-a-passkey/about-passkeys) · [Managing passkeys](https://docs.github.com/en/authentication/authenticating-with-a-passkey/managing-your-passkeys) · [Signing in with a passkey](https://docs.github.com/en/authentication/authenticating-with-a-passkey/signing-in-with-a-passkey) · [Configuring 2FA](https://docs.github.com/en/authentication/securing-your-account-with-two-factor-authentication-2fa/configuring-two-factor-authentication) · [Changing 2FA method](https://docs.github.com/en/authentication/securing-your-account-with-two-factor-authentication-2fa/changing-your-two-factor-authentication-method) · [2FA recovery methods](https://docs.github.com/en/authentication/securing-your-account-with-two-factor-authentication-2fa/configuring-two-factor-authentication-recovery-methods) · [Sudo mode](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/sudo-mode) · [Preventing unauthorized access](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/preventing-unauthorized-access) · [About authentication](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/about-authentication-to-github) (acesso **2026-09-26** ~18:38)
+**Nota:** `notes/<nota>.md`  
+Fontes: [About passkeys](https://docs.github.com/en/authentication/authenticating-with-a-passkey/about-passkeys) · [Managing passkeys](https://docs.github.com/en/authentication/authenticating-with-a-passkey/managing-your-passkeys) · [Signing in with a passkey](https://docs.github.com/en/authentication/authenticating-with-a-passkey/signing-in-with-a-passkey) · [Configuring 2FA](https://docs.github.com/en/authentication/securing-your-account-with-two-factor-authentication-2fa/configuring-two-factor-authentication) · [Changing 2FA method](https://docs.github.com/en/authentication/securing-your-account-with-two-factor-authentication-2fa/changing-your-two-factor-authentication-method) · [2FA recovery methods](https://docs.github.com/en/authentication/securing-your-account-with-two-factor-authentication-2fa/configuring-two-factor-authentication-recovery-methods) · [Sudo mode](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/sudo-mode) · [Preventing unauthorized access](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/preventing-unauthorized-access) · [About authentication](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/about-authentication-to-github) (acesso **AAAA-MM-DD** ~18:38)
 
 - [ ] Passkey cobre **password + 2FA**; security key WebAuthn sem UV = **só 2º fator** (com senha) — não confundir
 - [ ] Add passkey exige TOTP **ou** SMS já configurado
@@ -208,12 +207,12 @@ Fontes: [About passkeys](https://docs.github.com/en/authentication/authenticatin
 - [ ] IR com login: senha → 2FA/passkey → SSH/deploy/OAuth/Apps → Security log → e-mails → webhooks → deploy keys → commits → collaborators
 - [ ] Conta restricted: senha + hygiene + e-mail GitHub + Support se persistir
 - [ ] Cookies: `gist.github.com` ≠ `github.com`; sessão ~2 semanas inatividade
-- [ ] Gaps FG reconfirmados inalterados; cap 50 (~21:47 nota `2026-09-26-10-…`)
+- [ ] Gaps FG reconfirmados inalterados; cap 50 (~21:47 nota `<nota>`)
 
-## N. Gaps FG — Checks ≠ Statuses / Packages classic (2026-09-26)
+## N. Gaps FG — Checks ≠ Statuses / Packages classic (AAAA-MM-DD)
 
-**Nota:** `notes/2026-09-26-09-github-fg-gaps-checks-vs-statuses-packages.md`  
-Fontes: [Managing PATs](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) · [Permissions FG](https://docs.github.com/en/rest/authentication/permissions-required-for-fine-grained-personal-access-tokens) · [Checks runs](https://docs.github.com/en/rest/checks/runs) · [Commit statuses](https://docs.github.com/en/rest/commits/statuses) · [Packages permissions](https://docs.github.com/en/packages/learn-github-packages/about-permissions-for-github-packages) · [Keeping API credentials](https://docs.github.com/en/rest/authentication/keeping-your-api-credentials-secure) (acesso **2026-09-26** ~20:46)
+**Nota:** `notes/<nota>.md`  
+Fontes: [Managing PATs](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) · [Permissions FG](https://docs.github.com/en/rest/authentication/permissions-required-for-fine-grained-personal-access-tokens) · [Checks runs](https://docs.github.com/en/rest/checks/runs) · [Commit statuses](https://docs.github.com/en/rest/commits/statuses) · [Packages permissions](https://docs.github.com/en/packages/learn-github-packages/about-permissions-for-github-packages) · [Keeping API credentials](https://docs.github.com/en/rest/authentication/keeping-your-api-credentials-secure) (acesso **AAAA-MM-DD** ~20:46)
 
 - [ ] Gaps FG **inalterados**: público alheio · outside collab · multi-org · Packages · Checks API · Projects de **user**; cap **50**
 - [ ] **Checks write** (`POST/PATCH .../check-runs`) = **só GitHub App** — OAuth/user/classic **não criam**; classic/OAuth **lêem**
@@ -226,10 +225,10 @@ Fontes: [Managing PATs](https://docs.github.com/en/authentication/keeping-your-a
 - [ ] Template FG: não mintar sem intenção `user_models`/`organization_models`, `knowledge_bases`, `organization_private_registries`, `artifact_metadata`, `code_quality`, `organization_api_insights`, `organization_campaigns` (+ Agent/Copilot já §L)
 - [ ] 403 em check-runs com PAT → instrumento errado (App), não “falta Administration”
 
-## O. Push protection (users / MCP / REST) + remediação de leak (2026-09-26)
+## O. Push protection (users / MCP / REST) + remediação de leak (AAAA-MM-DD)
 
-**Nota:** `notes/2026-09-26-10-github-push-protection-users-mcp-remediation.md`  
-Fontes: [Push protection](https://docs.github.com/en/code-security/concepts/secret-security/push-protection) · [Manage user push protection](https://docs.github.com/en/code-security/how-tos/secure-your-secrets/prevent-future-leaks/manage-user-push-protection) · [PP CLI](https://docs.github.com/en/code-security/secret-scanning/working-with-secret-scanning-and-push-protection/working-with-push-protection-from-the-command-line) · [PP UI](https://docs.github.com/en/code-security/secret-scanning/working-with-secret-scanning-and-push-protection/working-with-push-protection-in-the-github-ui) · [PP REST](https://docs.github.com/en/code-security/concepts/secret-security/push-protection-from-the-rest-api) · [PP MCP](https://docs.github.com/en/code-security/concepts/secret-security/push-protection-and-the-github-mcp-server) · [Scan MCP](https://docs.github.com/en/code-security/how-tos/use-ghas-with-ai-coding-agents/scan-for-secrets-with-github-mcp-server) · [Patterns](https://docs.github.com/en/code-security/reference/secret-security/supported-secret-scanning-patterns) · [Remediate leaked secret](https://docs.github.com/en/code-security/tutorials/remediate-leaked-secrets/remediating-a-leaked-secret) · [Token expiration](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/token-expiration-and-revocation) · [Resolving alerts](https://docs.github.com/en/code-security/how-tos/manage-security-alerts/manage-secret-scanning-alerts/resolving-alerts) (acesso **2026-09-26** ~21:47)
+**Nota:** `notes/<nota>.md`  
+Fontes: [Push protection](https://docs.github.com/en/code-security/concepts/secret-security/push-protection) · [Manage user push protection](https://docs.github.com/en/code-security/how-tos/secure-your-secrets/prevent-future-leaks/manage-user-push-protection) · [PP CLI](https://docs.github.com/en/code-security/secret-scanning/working-with-secret-scanning-and-push-protection/working-with-push-protection-from-the-command-line) · [PP UI](https://docs.github.com/en/code-security/secret-scanning/working-with-secret-scanning-and-push-protection/working-with-push-protection-in-the-github-ui) · [PP REST](https://docs.github.com/en/code-security/concepts/secret-security/push-protection-from-the-rest-api) · [PP MCP](https://docs.github.com/en/code-security/concepts/secret-security/push-protection-and-the-github-mcp-server) · [Scan MCP](https://docs.github.com/en/code-security/how-tos/use-ghas-with-ai-coding-agents/scan-for-secrets-with-github-mcp-server) · [Patterns](https://docs.github.com/en/code-security/reference/secret-security/supported-secret-scanning-patterns) · [Remediate leaked secret](https://docs.github.com/en/code-security/tutorials/remediate-leaked-secrets/remediating-a-leaked-secret) · [Token expiration](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/token-expiration-and-revocation) · [Resolving alerts](https://docs.github.com/en/code-security/how-tos/manage-security-alerts/manage-secret-scanning-alerts/resolving-alerts) (acesso **AAAA-MM-DD** ~21:47)
 
 - [ ] Confirmar **Push protection for yourself** ON (Settings → Code security) — default ON; cobre push a **públicos**
 - [ ] Repo PP ≠ user PP: repo exige **Secret Protection**; gera alertas em bypass; user PP **não** gera alerta sozinho
@@ -246,10 +245,10 @@ Fontes: [Push protection](https://docs.github.com/en/code-security/concepts/secr
 - [ ] Alerta secret scanning **não** fecha sozinho ao remover do tree — Close as manual
 - [ ] Gaps FG reconfirmados inalterados; cap 50 (~21:47)
 
-## P. `GITHUB_TOKEN` Actions — permissões / forks / anti-PAT (2026-09-26)
+## P. `GITHUB_TOKEN` Actions — permissões / forks / anti-PAT (AAAA-MM-DD)
 
-**Nota:** `notes/2026-09-26-11-github-actions-github-token-permissions-forks.md`  
-Fontes: [GITHUB_TOKEN](https://docs.github.com/en/actions/concepts/security/github_token) · [Use GITHUB_TOKEN](https://docs.github.com/en/actions/security-guides/automatic-token-authentication) · [Workflow syntax `permissions`](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax) · [Actions settings (repo)](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/enabling-features-for-your-repository/managing-github-actions-settings-for-a-repository) · [Managing PATs](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) (acesso **2026-09-26** ~22:44)
+**Nota:** `notes/<nota>.md`  
+Fontes: [GITHUB_TOKEN](https://docs.github.com/en/actions/concepts/security/github_token) · [Use GITHUB_TOKEN](https://docs.github.com/en/actions/security-guides/automatic-token-authentication) · [Workflow syntax `permissions`](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax) · [Actions settings (repo)](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/enabling-features-for-your-repository/managing-github-actions-settings-for-a-repository) · [Managing PATs](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) (acesso **AAAA-MM-DD** ~22:44)
 
 - [ ] CI no **mesmo** repo: preferir **`GITHUB_TOKEN`** + `permissions:` mínimo — **antes** de mintar PAT (Managing PATs)
 - [ ] Tratar como installation token App: escopo = **só** o repo do workflow; também em `github.token` (action pode ler sem pass)
@@ -264,12 +263,12 @@ Fontes: [GITHUB_TOKEN](https://docs.github.com/en/actions/concepts/security/gith
 - [ ] Cross-repo / bot: **GitHub App** installation token no workflow; PAT secret = último recurso
 - [ ] `checks: write` no token embutido OK (é App); gap FG Checks ≠ mintar classic (§N)
 - [ ] Secret scanning alerts ≠ `security-events` do `GITHUB_TOKEN` (App/PAT)
-- [ ] Gaps FG reconfirmados inalterados; cap 50 (~22:44; reconfirm ~23:40 nota `2026-09-26-12-…`)
+- [ ] Gaps FG reconfirmados inalterados; cap 50 (~22:44; reconfirm ~23:40 nota `<nota>`)
 
-## Q. OIDC / `id-token` — cloud sem PAT long-lived (2026-09-26)
+## Q. OIDC / `id-token` — cloud sem PAT long-lived (AAAA-MM-DD)
 
-**Nota:** `notes/2026-09-26-12-github-actions-oidc-id-token-cloud-anti-pat.md`  
-Fontes: [About OIDC](https://docs.github.com/en/actions/security-for-github-actions/security-hardening-your-deployments/about-security-hardening-with-openid-connect) · [Configuring OIDC](https://docs.github.com/en/actions/security-for-github-actions/security-hardening-your-deployments/configuring-openid-connect-in-cloud-providers) · [OIDC reference](https://docs.github.com/en/actions/reference/openid-connect-reference) · [Reusable workflows + OIDC](https://docs.github.com/en/actions/security-for-github-actions/security-hardening-your-deployments/using-openid-connect-with-reusable-workflows) · [Environments](https://docs.github.com/en/actions/managing-workflow-runs-and-deployments/managing-deployments/managing-environments-for-deployment) · [Managing PATs](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) · well-known `https://token.actions.githubusercontent.com/.well-known/openid-configuration` (acesso **2026-09-26** ~23:40)
+**Nota:** `notes/<nota>.md`  
+Fontes: [About OIDC](https://docs.github.com/en/actions/security-for-github-actions/security-hardening-your-deployments/about-security-hardening-with-openid-connect) · [Configuring OIDC](https://docs.github.com/en/actions/security-for-github-actions/security-hardening-your-deployments/configuring-openid-connect-in-cloud-providers) · [OIDC reference](https://docs.github.com/en/actions/reference/openid-connect-reference) · [Reusable workflows + OIDC](https://docs.github.com/en/actions/security-for-github-actions/security-hardening-your-deployments/using-openid-connect-with-reusable-workflows) · [Environments](https://docs.github.com/en/actions/managing-workflow-runs-and-deployments/managing-deployments/managing-environments-for-deployment) · [Managing PATs](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) · well-known `https://token.actions.githubusercontent.com/.well-known/openid-configuration` (acesso **AAAA-MM-DD** ~23:40)
 
 - [ ] Deploy cloud no CI: **OIDC** antes de mintar AWS/GCP/Azure/Vault key como Actions secret (Managing PATs + About OIDC)
 - [ ] YAML: `permissions: id-token: write` (obrigatório) — **não** concede write em recursos GitHub; só JWT OIDC
@@ -277,7 +276,7 @@ Fontes: [About OIDC](https://docs.github.com/en/actions/security-for-github-acti
 - [ ] Issuer: `https://token.actions.githubusercontent.com` (JWKS `…/.well-known/jwks`)
 - [ ] Cloud trust: ≥**1** condição (`sub`/`aud`/claims) — sem condição = qualquer repo pode pedir token
 - [ ] `sub` default: `environment:` > `pull_request` > `ref:refs/heads|tags/…`; `:` → `%3A`
-- [ ] Repos criados após **2026-07-15** (ou opt-in): `sub` **imutável** `repo:OWNER@ID/REPO@ID:…` — atualizar trust; não GHES
+- [ ] Repos criados após **AAAA-MM-DD** (ou opt-in): `sub` **imutável** `repo:OWNER@ID/REPO@ID:…` — atualizar trust; não GHES
 - [ ] Produção: job com `environment:` + protection (reviewers / branches / wait); Free pessoal = environments só em **público**
 - [ ] Env criado só pelo YAML nasce **sem** rules — só admin configura
 - [ ] Dependabot OIDC: `event_name=dynamic`; registries CodeArtifact / Azure Artifacts / JFrog
@@ -286,10 +285,10 @@ Fontes: [About OIDC](https://docs.github.com/en/actions/security-for-github-acti
 - [ ] Árvore: mesmo-repo GitHub → `GITHUB_TOKEN` (§P) · cross-repo → App · **cloud → OIDC** · PAT/key = último
 - [ ] Gaps FG reconfirmados inalterados; cap 50 (~23:40)
 
-## R. Environment secrets / protection rules (2026-09-27)
+## R. Environment secrets / protection rules (AAAA-MM-DD)
 
-**Nota:** `notes/2026-09-27-01-github-environment-secrets-protection-rules.md`  
-Fontes: [Managing environments](https://docs.github.com/en/actions/managing-workflow-runs-and-deployments/managing-deployments/managing-environments-for-deployment) · [Deployments and environments](https://docs.github.com/en/actions/reference/workflows-and-actions/deployments-and-environments) · [Secrets reference](https://docs.github.com/en/actions/reference/security/secrets) · [Control deployments](https://docs.github.com/en/actions/how-tos/deploy/configure-and-manage-deployments/control-deployments) · [Secure use](https://docs.github.com/en/actions/reference/security/secure-use) · [Managing PATs](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) (acesso **2026-09-27** ~00:39)
+**Nota:** `notes/<nota>.md`  
+Fontes: [Managing environments](https://docs.github.com/en/actions/managing-workflow-runs-and-deployments/managing-deployments/managing-environments-for-deployment) · [Deployments and environments](https://docs.github.com/en/actions/reference/workflows-and-actions/deployments-and-environments) · [Secrets reference](https://docs.github.com/en/actions/reference/security/secrets) · [Control deployments](https://docs.github.com/en/actions/how-tos/deploy/configure-and-manage-deployments/control-deployments) · [Secure use](https://docs.github.com/en/actions/reference/security/secure-use) · [Managing PATs](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) (acesso **AAAA-MM-DD** ~00:39)
 
 - [ ] Secret de **produção** → store **environment** (não só repo): write no repo = lê secrets de repo (Secure use)
 - [ ] Precedência mesmo nome: **environment > repository > organization** (Secrets reference)
@@ -305,12 +304,12 @@ Fontes: [Managing environments](https://docs.github.com/en/actions/managing-work
 - [ ] Protected branches only: sem rules no repo → todas branches; tags homônimas / forks matching **não** deployam
 - [ ] Limites: 1000 org / 100 repo / 100 env · 48 KB; >100 org assigned → só primeiros 100 alfabéticos no workflow
 - [ ] Árvore: OIDC (§Q) → environment secret gated → PAT/key último; stores Actions≠Codespaces≠Dependabot
-- [ ] Gaps FG reconfirmados inalterados; cap 50 (~00:39; reconfirm ~01:37 nota `2026-09-27-02-…`); AGH 0.107.79 / b.90 / 1.0.0-a.69; Hostlists 71/64
+- [ ] Gaps FG reconfirmados inalterados; cap 50 (~00:39; reconfirm ~01:37 nota `<nota>`); AGH 0.107.79 / b.90 / 1.0.0-a.69; Hostlists 71/64
 
-## S. Actions variables vs secrets + reusable `secrets: inherit` (2026-09-27)
+## S. Actions variables vs secrets + reusable `secrets: inherit` (AAAA-MM-DD)
 
-**Nota:** `notes/2026-09-27-02-github-actions-variables-vs-secrets-inherit.md`  
-Fontes: [Variables](https://docs.github.com/en/actions/concepts/workflows-and-actions/variables) · [Use variables](https://docs.github.com/en/actions/how-tos/write-workflows/choose-what-workflows-do/use-variables) · [Variables reference](https://docs.github.com/en/actions/reference/variables-reference) · [Secrets](https://docs.github.com/en/actions/concepts/security/secrets) · [Secrets reference](https://docs.github.com/en/actions/reference/security/secrets) · [Secure use](https://docs.github.com/en/actions/reference/security/secure-use) · [Reuse workflows](https://docs.github.com/en/actions/how-tos/reuse-automations/reuse-workflows) · [Reusing workflow configurations](https://docs.github.com/en/actions/reference/workflows-and-actions/reusing-workflow-configurations) · [Managing PATs](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) (acesso **2026-09-27** ~01:37)
+**Nota:** `notes/<nota>.md`  
+Fontes: [Variables](https://docs.github.com/en/actions/concepts/workflows-and-actions/variables) · [Use variables](https://docs.github.com/en/actions/how-tos/write-workflows/choose-what-workflows-do/use-variables) · [Variables reference](https://docs.github.com/en/actions/reference/variables-reference) · [Secrets](https://docs.github.com/en/actions/concepts/security/secrets) · [Secrets reference](https://docs.github.com/en/actions/reference/security/secrets) · [Secure use](https://docs.github.com/en/actions/reference/security/secure-use) · [Reuse workflows](https://docs.github.com/en/actions/how-tos/reuse-automations/reuse-workflows) · [Reusing workflow configurations](https://docs.github.com/en/actions/reference/workflows-and-actions/reusing-workflow-configurations) · [Managing PATs](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) (acesso **AAAA-MM-DD** ~01:37)
 
 - [ ] Config **não sensível** → Variables/`env`; PAT/key/webhook → **Secrets** (Variables = unmasked by default — WARNING DOC)
 - [ ] Nunca colocar `ghp_`/`github_pat_`/`gho_`/`cloud key` em Settings → Variables
@@ -327,10 +326,10 @@ Fontes: [Variables](https://docs.github.com/en/actions/concepts/workflows-and-ac
 - [ ] Árvore: vars (config) → `GITHUB_TOKEN` (§P) → OIDC (§Q) → env secret (§R) → PAT último
 - [ ] Gaps FG reconfirmados inalterados; cap 50 (~01:37); AGH 0.107.79 / b.90 / 1.0.0-a.69; Hostlists 71/64 (49/51/56/70 = agressivas Guard, sem flag API)
 
-## T. Script injection / pwn request / checkout credentials (2026-09-27)
+## T. Script injection / pwn request / checkout credentials (AAAA-MM-DD)
 
-**Nota:** `notes/2026-09-27-03-github-actions-script-injection-pwn-request-checkout.md`  
-Fontes: [Script injections](https://docs.github.com/en/actions/concepts/security/script-injections) · [Secure use](https://docs.github.com/en/actions/reference/security/secure-use) · [Securely using pull_request_target](https://docs.github.com/en/actions/reference/security/securely-using-pull_request_target) · [actions/checkout README](https://github.com/actions/checkout/blob/main/README.md) · [Managing PATs](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) (acesso **2026-09-27** ~02:46)
+**Nota:** `notes/<nota>.md`  
+Fontes: [Script injections](https://docs.github.com/en/actions/concepts/security/script-injections) · [Secure use](https://docs.github.com/en/actions/reference/security/secure-use) · [Securely using pull_request_target](https://docs.github.com/en/actions/reference/security/securely-using-pull_request_target) · [actions/checkout README](https://github.com/actions/checkout/blob/main/README.md) · [Managing PATs](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) (acesso **AAAA-MM-DD** ~02:46)
 
 - [ ] Nunca interpolar `github.event.*.title|body|message|…` (nem branch/email) direto em `run:` `${{ }}` — shell injection → vazamento de secrets/`GITHUB_TOKEN`
 - [ ] Preferir action JS com `with:` **ou** `env: VAR: ${{ … }}` + `"$VAR"` no script
@@ -338,7 +337,7 @@ Fontes: [Script injections](https://docs.github.com/en/actions/concepts/security
 - [ ] Evitar `pull_request_target` se `pull_request` basta (fork = RO token, sem secrets)
 - [ ] **Pwn request:** PRT + `ref:` head/merge do PR (ou `repository:` fork / `git fetch` / artifact) + build/test = código do fork com secrets da base
 - [ ] `workflow_run` / `issue_comment` com secrets: artifacts e código de fork = untrusted data
-- [ ] Público sem event policy própria: default policy bloqueia PRT — hoje **evaluate**; **enforce 2026-11-02** (private/internal fora)
+- [ ] Público sem event policy própria: default policy bloqueia PRT — hoje **evaluate**; **enforce AAAA-MM-DD** (private/internal fora)
 - [ ] Se PRT inevitável: least privilege token/secrets · cache PRT read-only (não forçar write `cache-mode`) · self-hosted efêmero · CodeQL Actions
 - [ ] Checkout: `persist-credentials: false` se o job não precisa git autenticado (default true; v6 guarda em `$RUNNER_TEMP`)
 - [ ] Checkout **v7**: bloqueia fork PR em PRT/`workflow_run` por default; `allow-unsafe-pr-checkout: true` só inspeção-só (não cobre fetch/gh/artifact)
@@ -347,10 +346,10 @@ Fontes: [Script injections](https://docs.github.com/en/actions/concepts/security
 - [ ] Gaps FG reconfirmados inalterados; cap 50 (~02:46); AGH 0.107.79 / b.90 / 1.0.0-a.69; Hostlists 71/64 (49/51/56/70 agressivas Guard)
 
 
-## U. Artifact attestations + compromised runners (2026-09-27)
+## U. Artifact attestations + compromised runners (AAAA-MM-DD)
 
-**Nota:** `notes/2026-09-27-04-github-actions-artifact-attestations-compromised-runners.md`  
-Fontes: [Artifact attestations](https://docs.github.com/en/actions/concepts/security/artifact-attestations) · [Using artifact attestations](https://docs.github.com/en/actions/how-tos/secure-your-work/use-artifact-attestations/use-artifact-attestations) · [SLSA L3 / reusable](https://docs.github.com/en/actions/how-tos/secure-your-work/use-artifact-attestations/increase-security-rating) · [Manage attestations](https://docs.github.com/en/actions/how-tos/secure-your-work/use-artifact-attestations/manage-attestations) · [Compromised runners](https://docs.github.com/en/actions/concepts/security/compromised-runners) · [Secure use](https://docs.github.com/en/actions/reference/security/secure-use) · [Self-hosted runners](https://docs.github.com/en/actions/reference/runners/self-hosted-runners) · [Managing PATs](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) (acesso **2026-09-27** ~03:43)
+**Nota:** `notes/<nota>.md`  
+Fontes: [Artifact attestations](https://docs.github.com/en/actions/concepts/security/artifact-attestations) · [Using artifact attestations](https://docs.github.com/en/actions/how-tos/secure-your-work/use-artifact-attestations/use-artifact-attestations) · [SLSA L3 / reusable](https://docs.github.com/en/actions/how-tos/secure-your-work/use-artifact-attestations/increase-security-rating) · [Manage attestations](https://docs.github.com/en/actions/how-tos/secure-your-work/use-artifact-attestations/manage-attestations) · [Compromised runners](https://docs.github.com/en/actions/concepts/security/compromised-runners) · [Secure use](https://docs.github.com/en/actions/reference/security/secure-use) · [Self-hosted runners](https://docs.github.com/en/actions/reference/runners/self-hosted-runners) · [Managing PATs](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) (acesso **AAAA-MM-DD** ~03:43)
 
 - [ ] Release / binário / package consumível → gerar **artifact attestation** (`actions/attest` + `id-token: write` + `attestations: write`; imagem + `packages: write`)
 - [ ] Não assinar builds só de teste / source / docs (DOC When to generate)
@@ -367,10 +366,10 @@ Fontes: [Artifact attestations](https://docs.github.com/en/actions/concepts/secu
 - [ ] Árvore: vars (§S) → `GITHUB_TOKEN` (§P) → OIDC (§Q) → env secret (§R) → YAML (§T) → **attest** → runner hardening → PAT último
 - [ ] Gaps FG reconfirmados inalterados; cap 50 (~03:43); AGH 0.107.79 / b.90 / 1.0.0-a.69; Hostlists 71/64 (49/51/56/70 agressivas Guard; `deprecated: false`)
 
-## V. Immutable releases + release attestations (2026-09-27)
+## V. Immutable releases + release attestations (AAAA-MM-DD)
 
-**Nota:** `notes/2026-09-27-05-github-immutable-releases-release-attestations.md`  
-Fontes: [Immutable releases](https://docs.github.com/en/code-security/concepts/supply-chain-security/immutable-releases) · [Prevent release changes](https://docs.github.com/en/code-security/how-tos/secure-your-supply-chain/establish-provenance-and-integrity/prevent-release-changes) · [Verify release integrity](https://docs.github.com/en/code-security/how-tos/secure-your-supply-chain/secure-your-dependencies/verify-release-integrity) · [Using artifact attestations](https://docs.github.com/en/actions/how-tos/secure-your-work/use-artifact-attestations/use-artifact-attestations) · [REST Releases](https://docs.github.com/en/rest/releases/releases) · [REST Orgs immutable-releases](https://docs.github.com/en/rest/orgs/orgs) · [Managing PATs](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) (acesso **2026-09-27** ~04:41)
+**Nota:** `notes/<nota>.md`  
+Fontes: [Immutable releases](https://docs.github.com/en/code-security/concepts/supply-chain-security/immutable-releases) · [Prevent release changes](https://docs.github.com/en/code-security/how-tos/secure-your-supply-chain/establish-provenance-and-integrity/prevent-release-changes) · [Verify release integrity](https://docs.github.com/en/code-security/how-tos/secure-your-supply-chain/secure-your-dependencies/verify-release-integrity) · [Using artifact attestations](https://docs.github.com/en/actions/how-tos/secure-your-work/use-artifact-attestations/use-artifact-attestations) · [REST Releases](https://docs.github.com/en/rest/releases/releases) · [REST Orgs immutable-releases](https://docs.github.com/en/rest/orgs/orgs) · [Managing PATs](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) (acesso **AAAA-MM-DD** ~04:41)
 
 - [ ] Repo com release consumível → Settings → Releases → **Enable release immutability** (só **futuros**)
 - [ ] Org: Settings → Repository → General → Releases → All / Selected / none (só futuros)
@@ -387,10 +386,10 @@ Fontes: [Immutable releases](https://docs.github.com/en/code-security/concepts/s
 - [ ] Árvore: vars (§S) → `GITHUB_TOKEN` (§P) → OIDC (§Q) → env (§R) → YAML (§T) → attest build (§U) → **immutable release** → PAT último
 - [ ] Gaps FG reconfirmados inalterados; cap 50 (~04:41); AGH 0.107.79 / b.90 / 1.0.0-a.69; Hostlists 71/64 (49/51/56/70 agressivas Guard; `deprecated: false`)
 
-## W. Dependabot malware alerts + dependency review (2026-09-27)
+## W. Dependabot malware alerts + dependency review (AAAA-MM-DD)
 
-**Nota:** `notes/2026-09-27-06-github-dependabot-malware-dependency-review.md`  
-Fontes: [Malware alerts](https://docs.github.com/en/code-security/concepts/supply-chain-security/malware-alerts) · [Configure malware alerts](https://docs.github.com/en/code-security/how-tos/secure-your-supply-chain/secure-your-dependencies/configure-malware-alerts) · [Manage malware alerts](https://docs.github.com/en/code-security/how-tos/manage-security-alerts/manage-dependabot-alerts/manage-malware-alerts) · [Auto-triage rules](https://docs.github.com/en/code-security/concepts/supply-chain-security/dependabot-auto-triage-rules) · [Advisory Database](https://docs.github.com/en/code-security/concepts/vulnerability-reporting-and-management/github-advisory-database) · [Dependabot alerts](https://docs.github.com/en/code-security/concepts/supply-chain-security/about-dependabot-alerts) · [Dependency review](https://docs.github.com/en/code-security/concepts/supply-chain-security/about-dependency-review) · [Configure dependency-review-action](https://docs.github.com/en/code-security/how-tos/secure-your-supply-chain/manage-your-dependency-security/configure-dependency-review-action) · [Managing PATs](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) (acesso **2026-09-27** ~05:45)
+**Nota:** `notes/<nota>.md`  
+Fontes: [Malware alerts](https://docs.github.com/en/code-security/concepts/supply-chain-security/malware-alerts) · [Configure malware alerts](https://docs.github.com/en/code-security/how-tos/secure-your-supply-chain/secure-your-dependencies/configure-malware-alerts) · [Manage malware alerts](https://docs.github.com/en/code-security/how-tos/manage-security-alerts/manage-dependabot-alerts/manage-malware-alerts) · [Auto-triage rules](https://docs.github.com/en/code-security/concepts/supply-chain-security/dependabot-auto-triage-rules) · [Advisory Database](https://docs.github.com/en/code-security/concepts/vulnerability-reporting-and-management/github-advisory-database) · [Dependabot alerts](https://docs.github.com/en/code-security/concepts/supply-chain-security/about-dependabot-alerts) · [Dependency review](https://docs.github.com/en/code-security/concepts/supply-chain-security/about-dependency-review) · [Configure dependency-review-action](https://docs.github.com/en/code-security/how-tos/secure-your-supply-chain/manage-your-dependency-security/configure-dependency-review-action) · [Managing PATs](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) (acesso **AAAA-MM-DD** ~05:45)
 
 - [ ] CVE Dependabot alerts ≠ malware alerts (toggle separado; UI Dependabot → **Malware**)
 - [ ] Enable: Dependabot alerts **primeiro**, depois malware alerts (Settings → Advanced Security) — **UI, sem PAT**
@@ -410,10 +409,10 @@ Fontes: [Malware alerts](https://docs.github.com/en/code-security/concepts/suppl
 - [ ] Árvore: UI malware/DR → `GITHUB_TOKEN` read (§P) → OIDC (§Q) → env (§R) → YAML (§T) → attest/immutable (§U/§V) → PAT último
 - [ ] Gaps FG reconfirmados inalterados; cap 50 (~05:45); AGH 0.107.79 / b.90 / 1.0.0-a.69; Hostlists 71/64 (49/51/56/70 agressivas Guard; `deprecated: false`)
 
-## X. Dependabot security updates + grouped PRs (2026-09-27)
+## X. Dependabot security updates + grouped PRs (AAAA-MM-DD)
 
-**Nota:** `notes/2026-09-27-07-github-dependabot-security-updates-grouped.md`  
-Fontes: [Security updates](https://docs.github.com/en/code-security/concepts/supply-chain-security/dependabot-security-updates) · [Configure security updates](https://docs.github.com/en/code-security/how-tos/secure-your-supply-chain/secure-your-dependencies/configure-security-updates) · [Private registries](https://docs.github.com/en/code-security/how-tos/secure-your-supply-chain/manage-your-dependency-security/configure-access-to-private-registries) · [Dependabot on Actions](https://docs.github.com/en/code-security/reference/supply-chain-security/dependabot-on-actions) · [Dependabot errors](https://docs.github.com/en/code-security/reference/supply-chain-security/troubleshoot-dependabot/dependabot-errors) · [Managing PATs](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) (acesso **2026-09-27** ~06:43)
+**Nota:** `notes/<nota>.md`  
+Fontes: [Security updates](https://docs.github.com/en/code-security/concepts/supply-chain-security/dependabot-security-updates) · [Configure security updates](https://docs.github.com/en/code-security/how-tos/secure-your-supply-chain/secure-your-dependencies/configure-security-updates) · [Private registries](https://docs.github.com/en/code-security/how-tos/secure-your-supply-chain/manage-your-dependency-security/configure-access-to-private-registries) · [Dependabot on Actions](https://docs.github.com/en/code-security/reference/supply-chain-security/dependabot-on-actions) · [Dependabot errors](https://docs.github.com/en/code-security/reference/supply-chain-security/troubleshoot-dependabot/dependabot-errors) · [Managing PATs](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) (acesso **AAAA-MM-DD** ~06:43)
 
 - [ ] Security updates ≠ version updates ≠ malware alerts ≠ dependency review
 - [ ] Enable ordem: dependency graph → Dependabot alerts → **security updates** (UI Advanced Security) — **sem PAT**
@@ -432,10 +431,10 @@ Fontes: [Security updates](https://docs.github.com/en/code-security/concepts/sup
 - [ ] Árvore: UI security/grouped → Packages `GITHUB_TOKEN` → Dependabot secrets/OIDC → CI store Dependabot → malware §W → PAT último
 - [ ] Gaps FG reconfirmados inalterados; cap 50 (~06:43); AGH 0.107.79 / b.90 / 1.0.0-a.69; Hostlists 71/64 (49/51/56/70 agressivas Guard; `deprecated: false`)
 
-## Y. Dependabot version updates + schedule/cooldown (2026-09-27)
+## Y. Dependabot version updates + schedule/cooldown (AAAA-MM-DD)
 
-**Nota:** `notes/2026-09-27-08-github-dependabot-version-updates-schedule-hygiene.md`  
-Fontes: [Version updates](https://docs.github.com/en/code-security/concepts/supply-chain-security/dependabot-version-updates) · [Configure version updates](https://docs.github.com/en/code-security/how-tos/secure-your-supply-chain/secure-your-dependencies/configure-version-updates) · [Options reference](https://docs.github.com/en/code-security/reference/supply-chain-security/dependabot-options-reference) · [Optimizing PR creation](https://docs.github.com/en/code-security/tutorials/secure-your-dependencies/optimizing-pr-creation-version-updates) · [Auto-update Actions](https://docs.github.com/en/code-security/how-tos/secure-your-supply-chain/secure-your-dependencies/auto-update-actions) · [Managing PATs](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) (acesso **2026-09-27** ~07:47)
+**Nota:** `notes/<nota>.md`  
+Fontes: [Version updates](https://docs.github.com/en/code-security/concepts/supply-chain-security/dependabot-version-updates) · [Configure version updates](https://docs.github.com/en/code-security/how-tos/secure-your-supply-chain/secure-your-dependencies/configure-version-updates) · [Options reference](https://docs.github.com/en/code-security/reference/supply-chain-security/dependabot-options-reference) · [Optimizing PR creation](https://docs.github.com/en/code-security/tutorials/secure-your-dependencies/optimizing-pr-creation-version-updates) · [Auto-update Actions](https://docs.github.com/en/code-security/how-tos/secure-your-supply-chain/secure-your-dependencies/auto-update-actions) · [Managing PATs](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) (acesso **AAAA-MM-DD** ~07:47)
 
 - [ ] Version updates ≠ security updates (§X) ≠ malware (§W) — version = `dependabot.yml` (ou Enable UI que cria o arquivo)
 - [ ] Obrigatório por ecosystem: `package-ecosystem` + `directory`/`directories` + `schedule.interval`
@@ -452,10 +451,10 @@ Fontes: [Version updates](https://docs.github.com/en/code-security/concepts/supp
 - [ ] Árvore: só CVE → §X `limit: 0` · version → YAML schedule/cooldown/groups · Actions → bloco github-actions · PAT último
 - [ ] Gaps FG reconfirmados inalterados; cap 50 (~07:47); AGH 0.107.79 / b.90 / 1.0.0-a.69; Hostlists 71/64 (49/51/56/70 agressivas Guard; `deprecated: false`)
 
-## Z. Dependabot auto-triage + multi-ecosystem updates (2026-09-27)
+## Z. Dependabot auto-triage + multi-ecosystem updates (AAAA-MM-DD)
 
-**Nota:** `notes/2026-09-27-09-github-dependabot-auto-triage-multi-ecosystem.md`  
-Fontes: [Auto-triage rules](https://docs.github.com/en/code-security/concepts/supply-chain-security/dependabot-auto-triage-rules) · [Preset rules](https://docs.github.com/en/code-security/how-tos/secure-your-supply-chain/manage-your-dependency-security/prioritize-with-preset-rules) · [Customizing auto-triage](https://docs.github.com/en/code-security/how-tos/secure-your-supply-chain/manage-your-dependency-security/auto-triage-dependabot-alerts) · [Managing auto-dismissed](https://docs.github.com/en/code-security/how-tos/manage-security-alerts/manage-dependabot-alerts/managing-automatically-dismissed-alerts) · [CWE criteria](https://docs.github.com/en/code-security/reference/supply-chain-security/criteria-for-preset-rules) · [Multi-ecosystem](https://docs.github.com/en/code-security/concepts/supply-chain-security/multi-ecosystem-updates) · [Configuring multi-ecosystem](https://docs.github.com/en/code-security/how-tos/secure-your-supply-chain/secure-your-dependencies/configuring-multi-ecosystem-updates) · [Options reference](https://docs.github.com/en/code-security/reference/supply-chain-security/dependabot-options-reference) · [Managing PATs](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) (acesso **2026-09-27** ~08:44)
+**Nota:** `notes/<nota>.md`  
+Fontes: [Auto-triage rules](https://docs.github.com/en/code-security/concepts/supply-chain-security/dependabot-auto-triage-rules) · [Preset rules](https://docs.github.com/en/code-security/how-tos/secure-your-supply-chain/manage-your-dependency-security/prioritize-with-preset-rules) · [Customizing auto-triage](https://docs.github.com/en/code-security/how-tos/secure-your-supply-chain/manage-your-dependency-security/auto-triage-dependabot-alerts) · [Managing auto-dismissed](https://docs.github.com/en/code-security/how-tos/manage-security-alerts/manage-dependabot-alerts/managing-automatically-dismissed-alerts) · [CWE criteria](https://docs.github.com/en/code-security/reference/supply-chain-security/criteria-for-preset-rules) · [Multi-ecosystem](https://docs.github.com/en/code-security/concepts/supply-chain-security/multi-ecosystem-updates) · [Configuring multi-ecosystem](https://docs.github.com/en/code-security/how-tos/secure-your-supply-chain/secure-your-dependencies/configuring-multi-ecosystem-updates) · [Options reference](https://docs.github.com/en/code-security/reference/supply-chain-security/dependabot-options-reference) · [Managing PATs](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) (acesso **AAAA-MM-DD** ~08:44)
 
 - [ ] Auto-triage = UI Advanced Security → Dependabot rules — **sem PAT**; CRUD de rules não é REST Dependabot alerts/secrets
 - [ ] Preset **low-impact npm dev**: default on público; private = Enable UI; CWEs GitHub-curated (criteria-for-preset-rules)
@@ -472,10 +471,10 @@ Fontes: [Auto-triage rules](https://docs.github.com/en/code-security/concepts/su
 - [ ] Árvore: presets UI → custom dismiss/open-PR → security §X → version §Y → multi-ecosystem YAML → PAT último
 - [ ] Gaps FG reconfirmados inalterados; cap 50 (~08:44); AGH 0.107.79 / b.90 / 1.0.0-a.69; Hostlists 71/64 (49/51/56/70 agressivas Guard; `deprecated: false`); tag v0.107.80 API 403 unauth (CDN ainda 0.107.79)
 
-## AA. Actions Runner Controller / scale sets auth + ops (2026-09-27)
+## AA. Actions Runner Controller / scale sets auth + ops (AAAA-MM-DD)
 
-**Nota:** `notes/2026-09-27-10-github-arc-scale-sets-auth-ops.md`  
-Fontes: [About ARC](https://docs.github.com/en/actions/hosting-your-own-runners/managing-self-hosted-runners-with-actions-runner-controller/about-actions-runner-controller) · [Authenticate ARC](https://docs.github.com/en/actions/hosting-your-own-runners/managing-self-hosted-runners-with-actions-runner-controller/authenticating-to-the-github-api) · [Deploy scale sets](https://docs.github.com/en/actions/hosting-your-own-runners/managing-self-hosted-runners-with-actions-runner-controller/deploying-runner-scale-sets-with-actions-runner-controller) · [Use in workflow](https://docs.github.com/en/actions/hosting-your-own-runners/managing-self-hosted-runners-with-actions-runner-controller/using-actions-runner-controller-runners-in-a-workflow) · [Managing PATs](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) (acesso **2026-09-27 ~09:43**)
+**Nota:** `notes/<nota>.md`  
+Fontes: [About ARC](https://docs.github.com/en/actions/hosting-your-own-runners/managing-self-hosted-runners-with-actions-runner-controller/about-actions-runner-controller) · [Authenticate ARC](https://docs.github.com/en/actions/hosting-your-own-runners/managing-self-hosted-runners-with-actions-runner-controller/authenticating-to-the-github-api) · [Deploy scale sets](https://docs.github.com/en/actions/hosting-your-own-runners/managing-self-hosted-runners-with-actions-runner-controller/deploying-runner-scale-sets-with-actions-runner-controller) · [Use in workflow](https://docs.github.com/en/actions/hosting-your-own-runners/managing-self-hosted-runners-with-actions-runner-controller/using-actions-runner-controller-runners-in-a-workflow) · [Managing PATs](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) (acesso **AAAA-MM-DD ~09:43**)
 
 - [ ] ARC = K8s operator + **ephemeral** scale sets (JIT); charts OCI `gha-runner-scale-set-controller` + `gha-runner-scale-set`
 - [ ] Auth ordem: **GitHub App** (org/repo) → FG mínimo → classic último; **enterprise** = classic só (App não autentica)
@@ -495,10 +494,10 @@ Fontes: [About ARC](https://docs.github.com/en/actions/hosting-your-own-runners/
 - [ ] Árvore: App Secret → FG → classic enterprise → hosted se público → PAT último
 - [ ] Gaps FG reconfirmados inalterados; cap 50 (~09:43); AGH 0.107.79 / b.90 / 1.0.0-a.69; Hostlists 71/64 (49/51/56/70 agressivas Guard; `deprecated: false`); tag v0.107.80 API 403 unauth (CDN ainda 0.107.79)
 
-## AB. Dependabot org Global (runner type / private access) + ruleset DR + group-by (2026-09-27)
+## AB. Dependabot org Global (runner type / private access) + ruleset DR + group-by (AAAA-MM-DD)
 
-**Nota:** `notes/2026-09-27-11-github-dependabot-org-global-runner-private-access.md`  
-Fontes: [Global security settings](https://docs.github.com/en/code-security/securing-your-organization/enabling-security-features-in-your-organization/configuring-global-security-settings-for-your-organization) · [Dependabot on self-hosted](https://docs.github.com/en/code-security/how-tos/secure-your-supply-chain/manage-your-dependency-security/configure-on-self-hosted-runners) · [Dependabot on Actions](https://docs.github.com/en/code-security/reference/supply-chain-security/dependabot-on-actions) · [Enforce dependency review](https://docs.github.com/en/code-security/how-tos/secure-at-scale/configure-organization-security/configure-specific-tools/enforce-dependency-review) · [Options reference group-by](https://docs.github.com/en/code-security/reference/supply-chain-security/dependabot-options-reference) · [Managing PATs](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) (acesso **2026-09-27 ~10:38**)
+**Nota:** `notes/<nota>.md`  
+Fontes: [Global security settings](https://docs.github.com/en/code-security/securing-your-organization/enabling-security-features-in-your-organization/configuring-global-security-settings-for-your-organization) · [Dependabot on self-hosted](https://docs.github.com/en/code-security/how-tos/secure-your-supply-chain/manage-your-dependency-security/configure-on-self-hosted-runners) · [Dependabot on Actions](https://docs.github.com/en/code-security/reference/supply-chain-security/dependabot-on-actions) · [Enforce dependency review](https://docs.github.com/en/code-security/how-tos/secure-at-scale/configure-organization-security/configure-specific-tools/enforce-dependency-review) · [Options reference group-by](https://docs.github.com/en/code-security/reference/supply-chain-security/dependabot-options-reference) · [Managing PATs](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) (acesso **AAAA-MM-DD ~10:38**)
 
 - [ ] Org Global Dependabot = UI Advanced Security → Global settings — **sem PAT** (auto-triage §Z · grouped security §X · Actions runners · runner type · private grant)
 - [ ] Default runner = **Standard GitHub** (hosted); Labeled = self-hosted/larger com label (default `dependabot`) + group opcional
@@ -514,10 +513,10 @@ Fontes: [Global security settings](https://docs.github.com/en/code-security/secu
 - [ ] Árvore: UI Global → hosted default → labeled só private+rede → grant consciente → ruleset DR → group-by monorepo → PAT último
 - [ ] Gaps FG reconfirmados inalterados; cap 50 (~10:38); AGH 0.107.79 / b.90 / 1.0.0-a.69; Hostlists 71/64 (49/51/56/70 agressivas Guard; `deprecated: false`); tag v0.107.80 API **404** (DELTA vs 403; CDN ainda 0.107.79)
 
-## AC. Security configurations at scale + secret scanning custom patterns (2026-09-27)
+## AC. Security configurations at scale + secret scanning custom patterns (AAAA-MM-DD)
 
-**Nota:** `notes/2026-09-27-12-github-security-configurations-custom-patterns.md`  
-Fontes: [Enabling security features at scale](https://docs.github.com/en/code-security/concepts/security-at-scale/organization-security) · [Creating a custom security configuration](https://docs.github.com/en/code-security/how-tos/secure-at-scale/configure-organization-security/establish-complete-coverage/create-custom-configuration) · [Defining custom patterns](https://docs.github.com/en/code-security/how-tos/secure-your-secrets/customize-leak-detection/define-custom-patterns) · [REST Configurations](https://docs.github.com/en/rest/code-security/configurations) · [Managing PATs](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) (acesso **2026-09-27 ~11:44**)
+**Nota:** `notes/<nota>.md`  
+Fontes: [Enabling security features at scale](https://docs.github.com/en/code-security/concepts/security-at-scale/organization-security) · [Creating a custom security configuration](https://docs.github.com/en/code-security/how-tos/secure-at-scale/configure-organization-security/establish-complete-coverage/create-custom-configuration) · [Defining custom patterns](https://docs.github.com/en/code-security/how-tos/secure-your-secrets/customize-leak-detection/define-custom-patterns) · [REST Configurations](https://docs.github.com/en/rest/code-security/configurations) · [Managing PATs](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) (acesso **AAAA-MM-DD ~11:44**)
 
 - [ ] Configurations = enablement **repo-level** em escala; Global settings = **org-level** (custom patterns) — UI Advanced Security — **sem PAT** no dia a dia
 - [ ] Secret Protection / Code Security em private = paid; toggles enable/disable/keep existing
@@ -532,10 +531,10 @@ Fontes: [Enabling security features at scale](https://docs.github.com/en/code-se
 - [ ] Árvore: UI config+Global → dry-run pattern → PP consciente → REST só se automação → classic `write:org` → enterprise classic+admin → PAT último
 - [ ] Gaps FG reconfirmados inalterados; cap 50 (~11:44); AGH 0.107.79 / b.90 / 1.0.0-a.69; Hostlists 71/64 (49/51/56/70 agressivas Guard; `deprecated: false`); tag v0.107.80 git/refs **404** (releases/tags 403 rate; CDN ainda 0.107.79)
 
-## AD. Validity checks (partner) + configuration statuses / enforcement (2026-09-27)
+## AD. Validity checks (partner) + configuration statuses / enforcement (AAAA-MM-DD)
 
-**Nota:** `notes/2026-09-27-13-github-validity-checks-config-statuses-enforcement.md`  
-Fontes: [Validity checks](https://docs.github.com/en/code-security/concepts/secret-security/validity-checks) · [Enable validity checks](https://docs.github.com/en/code-security/how-tos/secure-your-secrets/customize-leak-detection/enable-validity-checks) · [Evaluating alerts](https://docs.github.com/en/code-security/tutorials/remediate-leaked-secrets/evaluating-alerts) · [Supported patterns](https://docs.github.com/en/code-security/reference/secret-security/supported-secret-scanning-patterns) · [Apply configuration](https://docs.github.com/en/code-security/how-tos/secure-at-scale/configure-organization-security/establish-complete-coverage/apply-custom-configuration) · [Configuration statuses](https://docs.github.com/en/code-security/reference/security-at-scale/configuration-statuses) · [Diagnosing issues](https://docs.github.com/en/code-security/reference/security-at-scale/troubleshoot-security-configurations/configuration-issue-diagnosis) · [Enforcement](https://docs.github.com/en/code-security/reference/security-at-scale/configuration-enforcement) · [Managing PATs](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) (acesso **2026-09-27 ~12:39**)
+**Nota:** `notes/<nota>.md`  
+Fontes: [Validity checks](https://docs.github.com/en/code-security/concepts/secret-security/validity-checks) · [Enable validity checks](https://docs.github.com/en/code-security/how-tos/secure-your-secrets/customize-leak-detection/enable-validity-checks) · [Evaluating alerts](https://docs.github.com/en/code-security/tutorials/remediate-leaked-secrets/evaluating-alerts) · [Supported patterns](https://docs.github.com/en/code-security/reference/secret-security/supported-secret-scanning-patterns) · [Apply configuration](https://docs.github.com/en/code-security/how-tos/secure-at-scale/configure-organization-security/establish-complete-coverage/apply-custom-configuration) · [Configuration statuses](https://docs.github.com/en/code-security/reference/security-at-scale/configuration-statuses) · [Diagnosing issues](https://docs.github.com/en/code-security/reference/security-at-scale/troubleshoot-security-configurations/configuration-issue-diagnosis) · [Enforcement](https://docs.github.com/en/code-security/reference/security-at-scale/configuration-enforcement) · [Managing PATs](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) (acesso **AAAA-MM-DD ~12:39**)
 
 - [ ] GitHub token validity = **default** com secret scanning; partner validity = Team/Enterprise + **Secret Protection** (org-owned) — UI ou security configuration — **sem PAT**
 - [ ] Generic patterns: validity **não** suportada; Extended metadata só com validity on (preview; provedores limitados)
@@ -551,10 +550,10 @@ Fontes: [Validity checks](https://docs.github.com/en/code-security/concepts/secr
 - [ ] Árvore: UI validity/config → statuses → Enforce consciente → REST configs §AC → classic último
 - [ ] Gaps FG reconfirmados inalterados; cap 50 (~12:39); AGH 0.107.79 / b.90 / 1.0.0-a.69; Hostlists 71/64 (49/51/56/70 agressivas Guard; `deprecated: false`); tag v0.107.80 git/refs **404** (CDN ainda 0.107.79)
 
-## AE. Secret scanning alert triage — REST / webhooks / monitor (2026-09-27)
+## AE. Secret scanning alert triage — REST / webhooks / monitor (AAAA-MM-DD)
 
-**Nota:** `notes/2026-09-27-14-github-secret-scanning-alert-triage-rest-webhooks.md`  
-Fontes: [Resolving alerts](https://docs.github.com/en/code-security/how-tos/manage-security-alerts/manage-secret-scanning-alerts/resolving-alerts) · [Evaluating alerts](https://docs.github.com/en/code-security/tutorials/remediate-leaked-secrets/evaluating-alerts) · [Monitoring alerts](https://docs.github.com/en/code-security/how-tos/manage-security-alerts/manage-secret-scanning-alerts/monitoring-alerts) · [REST secret scanning](https://docs.github.com/en/rest/secret-scanning/secret-scanning) · [Auditing security alerts](https://docs.github.com/en/code-security/concepts/security-at-scale/audit-security-alerts) · [Webhooks secret_scanning_alert](https://docs.github.com/en/webhooks/webhook-events-and-payloads#secret_scanning_alert) · [FG Secret scanning alerts](https://docs.github.com/en/rest/authentication/permissions-required-for-fine-grained-personal-access-tokens#repository-permissions-for-secret-scanning-alerts) · [Managing PATs](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) (acesso **2026-09-27 ~13:39**)
+**Nota:** `notes/<nota>.md`  
+Fontes: [Resolving alerts](https://docs.github.com/en/code-security/how-tos/manage-security-alerts/manage-secret-scanning-alerts/resolving-alerts) · [Evaluating alerts](https://docs.github.com/en/code-security/tutorials/remediate-leaked-secrets/evaluating-alerts) · [Monitoring alerts](https://docs.github.com/en/code-security/how-tos/manage-security-alerts/manage-secret-scanning-alerts/monitoring-alerts) · [REST secret scanning](https://docs.github.com/en/rest/secret-scanning/secret-scanning) · [Auditing security alerts](https://docs.github.com/en/code-security/concepts/security-at-scale/audit-security-alerts) · [Webhooks secret_scanning_alert](https://docs.github.com/en/webhooks/webhook-events-and-payloads#secret_scanning_alert) · [FG Secret scanning alerts](https://docs.github.com/en/rest/authentication/permissions-required-for-fine-grained-personal-access-tokens#repository-permissions-for-secret-scanning-alerts) · [Managing PATs](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) (acesso **AAAA-MM-DD ~13:39**)
 
 - [ ] Avaliar: `active` priorizar · `inactive` auditar prévio · `unknown` = possivelmente ativo; labels `public leak` / `multi-repo`; Verify secret se partner validity (§AD)
 - [ ] Ordem: **revogar/rotacionar** → atualizar stores → (privado PAT) Report leak preview **após** rotate se downtime · **Close as** manual — SS **não** auto-fecha ao apagar do tree (§O)
@@ -570,10 +569,10 @@ Fontes: [Resolving alerts](https://docs.github.com/en/code-security/how-tos/mana
 - [ ] Árvore: UI evaluate→revoke→Close as → webhook IR → REST FG SS alerts → classic `security_events` último
 - [ ] Gaps FG reconfirmados inalterados; cap 50 (~13:39); AGH 0.107.79 / b.90 / 1.0.0-a.69; Hostlists 71/64 (49/51/56/70 agressivas Guard; `deprecated: false`); tag v0.107.80 git/refs **404** (CDN ainda 0.107.79)
 
-## AF. CodeQL default setup — language matrix / runners / auth (2026-09-27)
+## AF. CodeQL default setup — language matrix / runners / auth (AAAA-MM-DD)
 
-**Nota:** `notes/2026-09-27-15-github-codeql-default-setup-language-matrix.md`  
-Fontes: [Configuring default setup](https://docs.github.com/en/code-security/code-scanning/enabling-code-scanning/configuring-default-setup-for-code-scanning) · [At scale](https://docs.github.com/en/code-security/code-scanning/enabling-code-scanning/configuring-default-setup-for-code-scanning-at-scale) · [About CodeQL](https://docs.github.com/en/code-security/code-scanning/introduction-to-code-scanning/about-code-scanning-with-codeql) · [Query suites](https://docs.github.com/en/code-security/concepts/code-scanning/codeql/codeql-query-suites) · [Edit default setup](https://docs.github.com/en/code-security/how-tos/find-and-fix-code-vulnerabilities/manage-your-configuration/edit-default-setup) · [REST code scanning](https://docs.github.com/en/rest/code-scanning/code-scanning) · [FG permissions](https://docs.github.com/en/rest/authentication/permissions-required-for-fine-grained-personal-access-tokens) · [Managing PATs](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) (acesso **2026-09-27 ~14:39**)
+**Nota:** `notes/<nota>.md`  
+Fontes: [Configuring default setup](https://docs.github.com/en/code-security/code-scanning/enabling-code-scanning/configuring-default-setup-for-code-scanning) · [At scale](https://docs.github.com/en/code-security/code-scanning/enabling-code-scanning/configuring-default-setup-for-code-scanning-at-scale) · [About CodeQL](https://docs.github.com/en/code-security/code-scanning/introduction-to-code-scanning/about-code-scanning-with-codeql) · [Query suites](https://docs.github.com/en/code-security/concepts/code-scanning/codeql/codeql-query-suites) · [Edit default setup](https://docs.github.com/en/code-security/how-tos/find-and-fix-code-vulnerabilities/manage-your-configuration/edit-default-setup) · [REST code scanning](https://docs.github.com/en/rest/code-scanning/code-scanning) · [FG permissions](https://docs.github.com/en/rest/authentication/permissions-required-for-fine-grained-personal-access-tokens) · [Managing PATs](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) (acesso **AAAA-MM-DD ~14:39**)
 
 - [ ] Elegível: Actions on + (público **ou** Code Security); advanced setup já ativo → at-scale inelegível até trocar
 - [ ] Enable/edit dia a dia = **UI** Default ou security configuration (§AC) — **sem** classic só para ligar scan
@@ -592,10 +591,10 @@ Fontes: [Configuring default setup](https://docs.github.com/en/code-security/cod
 - [ ] Árvore: UI/config → FG Administration → FG Code scanning alerts → classic `security_events`/`repo` último
 - [ ] Gaps FG reconfirmados inalterados; cap 50 (~14:39); AGH 0.107.79 / b.90 / 1.0.0-a.69; Hostlists 71/64 (49/51/56/70 agressivas Guard; `deprecated: false`); tag v0.107.80 git/refs **404** (CDN ainda 0.107.79); path CDN = `adguardhome/` (não `adguard-home`)
 
-## AG. CodeQL advanced setup — custom queries / packs / config / auth (2026-09-27)
+## AG. CodeQL advanced setup — custom queries / packs / config / auth (AAAA-MM-DD)
 
-**Nota:** `notes/2026-09-27-16-github-codeql-advanced-setup-custom-queries.md`  
-Fontes: [Configuring advanced setup](https://docs.github.com/en/code-security/code-scanning/creating-an-advanced-setup-for-code-scanning/configuring-advanced-setup-for-code-scanning) · [Workflow configuration options](https://docs.github.com/en/code-security/code-scanning/creating-an-advanced-setup-for-code-scanning/customizing-your-advanced-setup-for-code-scanning) · [At scale](https://docs.github.com/en/code-security/code-scanning/creating-an-advanced-setup-for-code-scanning/configuring-advanced-setup-for-code-scanning-with-codeql-at-scale) · [Managing PATs](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) (acesso **2026-09-27 ~15:44**)
+**Nota:** `notes/<nota>.md`  
+Fontes: [Configuring advanced setup](https://docs.github.com/en/code-security/code-scanning/creating-an-advanced-setup-for-code-scanning/configuring-advanced-setup-for-code-scanning) · [Workflow configuration options](https://docs.github.com/en/code-security/code-scanning/creating-an-advanced-setup-for-code-scanning/customizing-your-advanced-setup-for-code-scanning) · [At scale](https://docs.github.com/en/code-security/code-scanning/creating-an-advanced-setup-for-code-scanning/configuring-advanced-setup-for-code-scanning-with-codeql-at-scale) · [Managing PATs](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) (acesso **AAAA-MM-DD ~15:44**)
 
 - [ ] Preferir **default** (§AF) / security configuration (§AC) se não precisar customização real
 - [ ] Elegível: Actions on + (público **ou** Code Security) + linguagens CodeQL ou SARIF third-party
@@ -615,10 +614,10 @@ Fontes: [Configuring advanced setup](https://docs.github.com/en/code-security/co
 - [ ] Árvore: default primeiro → UI advanced → secrets tipados → classic `read:packages` só GHES → App multi-repo → classic último
 - [ ] Gaps FG reconfirmados inalterados; cap 50 (~15:44); AGH 0.107.79 / b.90 / 1.0.0-a.69; Hostlists 71/64 (49/51/56/70 agressivas Guard; `deprecated: false`); tag v0.107.80 git/refs **404** (CDN ainda 0.107.79); path CDN = `adguardhome/`
 
-## AH. CodeQL compiled languages — build modes none/autobuild/manual (2026-09-27)
+## AH. CodeQL compiled languages — build modes none/autobuild/manual (AAAA-MM-DD)
 
-**Nota:** `notes/2026-09-27-17-github-codeql-compiled-languages-build-modes.md`  
-Fontes: [Concepts compiled](https://docs.github.com/en/code-security/concepts/code-scanning/codeql/codeql-for-compiled-languages) · [How-to compiled](https://docs.github.com/en/code-security/how-tos/find-and-fix-code-vulnerabilities/manage-your-configuration/codeql-for-compiled-languages) · [Build options](https://docs.github.com/en/code-security/reference/code-scanning/codeql/build-options-for-compiled-languages) · [Automatic build failed](https://docs.github.com/en/code-security/reference/code-scanning/troubleshoot-analysis-errors/automatic-build-failed) · [Managing PATs](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) (acesso **2026-09-27 ~16:43**)
+**Nota:** `notes/<nota>.md`  
+Fontes: [Concepts compiled](https://docs.github.com/en/code-security/concepts/code-scanning/codeql/codeql-for-compiled-languages) · [How-to compiled](https://docs.github.com/en/code-security/how-tos/find-and-fix-code-vulnerabilities/manage-your-configuration/codeql-for-compiled-languages) · [Build options](https://docs.github.com/en/code-security/reference/code-scanning/codeql/build-options-for-compiled-languages) · [Automatic build failed](https://docs.github.com/en/code-security/reference/code-scanning/troubleshoot-analysis-errors/automatic-build-failed) · [Managing PATs](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) (acesso **AAAA-MM-DD ~16:43**)
 
 - [ ] Build-mode **não** exige PAT — default UI / security configuration (§AF/§AC) ou editar workflow advanced (§AG)
 - [ ] `none` = DB sem build (interpreted + C/C++ · C# · Java · Rust); completeness: generated code **fora**
@@ -635,10 +634,10 @@ Fontes: [Concepts compiled](https://docs.github.com/en/code-security/concepts/co
 - [ ] Árvore: default `none`/`autobuild` → advanced `manual` se high-risk/fail → secrets só packs/registries (§AG) → classic `read:packages` só GHES → App multi-repo
 - [ ] Gaps FG reconfirmados inalterados; cap 50 (~16:43); AGH 0.107.79 / b.90 / 1.0.0-a.69; Hostlists 71/64 (49/51/56/70 agressivas Guard; `deprecated: false`); tag v0.107.80 git/refs **404** (CDN ainda 0.107.79); path CDN = `adguardhome/`
 
-## AI. Code scanning alert triage + Copilot Autofix / agentic (2026-09-27)
+## AI. Code scanning alert triage + Copilot Autofix / agentic (AAAA-MM-DD)
 
-**Nota:** `notes/2026-09-27-18-github-code-scanning-alert-triage-autofix.md`  
-Fontes: [Resolving alerts](https://docs.github.com/en/code-security/how-tos/manage-security-alerts/manage-code-scanning-alerts/resolve-alerts) · [Triage in PRs](https://docs.github.com/en/code-security/how-tos/manage-security-alerts/manage-code-scanning-alerts/triage-alerts-in-pull-requests) · [About autofix](https://docs.github.com/en/code-security/concepts/code-scanning/autofix-for-code-scanning) · [REST code scanning](https://docs.github.com/en/rest/code-scanning/code-scanning) · [Merge protection](https://docs.github.com/en/code-security/how-tos/find-and-fix-code-vulnerabilities/manage-your-configuration/set-merge-protection) · [Delegated dismissal](https://docs.github.com/en/code-security/how-tos/manage-security-alerts/manage-code-scanning-alerts/enable-delegated-alert-dismissal) · [Managing PATs](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) (acesso **2026-09-27 ~17:39**)
+**Nota:** `notes/<nota>.md`  
+Fontes: [Resolving alerts](https://docs.github.com/en/code-security/how-tos/manage-security-alerts/manage-code-scanning-alerts/resolve-alerts) · [Triage in PRs](https://docs.github.com/en/code-security/how-tos/manage-security-alerts/manage-code-scanning-alerts/triage-alerts-in-pull-requests) · [About autofix](https://docs.github.com/en/code-security/concepts/code-scanning/autofix-for-code-scanning) · [REST code scanning](https://docs.github.com/en/rest/code-scanning/code-scanning) · [Merge protection](https://docs.github.com/en/code-security/how-tos/find-and-fix-code-vulnerabilities/manage-your-configuration/set-merge-protection) · [Delegated dismissal](https://docs.github.com/en/code-security/how-tos/manage-security-alerts/manage-code-scanning-alerts/enable-delegated-alert-dismissal) · [Managing PATs](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) (acesso **AAAA-MM-DD ~17:39**)
 
 - [ ] Dia a dia triage / Generate fix / Create PR with fix = **UI** Security — **sem** classic só para olhar alertas
 - [ ] Check **Code scanning results**; fail default = `error`/`critical`/`high`; override severities no default setup
@@ -656,10 +655,10 @@ Fontes: [Resolving alerts](https://docs.github.com/en/code-security/how-tos/mana
 - [ ] Árvore: UI triage/Autofix → FG Code scanning alerts → classic `repo` só commit autofix API → App multi-repo → classic amplo último
 - [ ] Gaps FG reconfirmados inalterados; cap 50 (~17:39); AGH 0.107.79 / b.90 / 1.0.0-a.69; Hostlists 71/64 (49/51/56/70 agressivas Guard; `deprecated: false`); tag v0.107.80 git/refs **404** (CDN ainda 0.107.79); path CDN = `adguardhome/`
 
-## AJ. Code scanning merge protection + delegated dismissal (2026-09-27)
+## AJ. Code scanning merge protection + delegated dismissal (AAAA-MM-DD)
 
-**Nota:** `notes/2026-09-27-19-github-code-scanning-merge-protection-delegated-dismissal.md`  
-Fontes: [Set merge protection](https://docs.github.com/en/code-security/how-tos/find-and-fix-code-vulnerabilities/manage-your-configuration/set-merge-protection) · [Available rules](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/available-rules-for-rulesets) · [REST rules](https://docs.github.com/en/rest/repos/rules) · [Enable delegated dismissal](https://docs.github.com/en/code-security/how-tos/manage-security-alerts/manage-code-scanning-alerts/enable-delegated-alert-dismissal) · [Review dismissal requests](https://docs.github.com/en/code-security/how-tos/manage-security-alerts/remediate-alerts-at-scale/review-alert-dismissal-requests) · [REST dismissal-requests](https://docs.github.com/en/rest/code-scanning/alert-dismissal-requests) · [REST code scanning](https://docs.github.com/en/rest/code-scanning/code-scanning) · [Managing PATs](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) (acesso **2026-09-27 ~18:42**)
+**Nota:** `notes/<nota>.md`  
+Fontes: [Set merge protection](https://docs.github.com/en/code-security/how-tos/find-and-fix-code-vulnerabilities/manage-your-configuration/set-merge-protection) · [Available rules](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/available-rules-for-rulesets) · [REST rules](https://docs.github.com/en/rest/repos/rules) · [Enable delegated dismissal](https://docs.github.com/en/code-security/how-tos/manage-security-alerts/manage-code-scanning-alerts/enable-delegated-alert-dismissal) · [Review dismissal requests](https://docs.github.com/en/code-security/how-tos/manage-security-alerts/remediate-alerts-at-scale/review-alert-dismissal-requests) · [REST dismissal-requests](https://docs.github.com/en/rest/code-scanning/alert-dismissal-requests) · [REST code scanning](https://docs.github.com/en/rest/code-scanning/code-scanning) · [Managing PATs](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) (acesso **AAAA-MM-DD ~18:42**)
 
 - [ ] Ligar gate / Prevent = **UI** — **sem** mintar classic só para toggle
 - [ ] Pré-req: Code scanning configurado (§AF/§AG) **antes** de ruleset `active` (senão bloqueia “tool not configured”)
@@ -678,10 +677,10 @@ Fontes: [Set merge protection](https://docs.github.com/en/code-security/how-tos/
 - [ ] Árvore: enable CS → ruleset thresholds → Prevent on → request/review → App multi-repo → classic amplo último
 - [ ] Gaps FG reconfirmados inalterados; cap 50 (~18:42); AGH 0.107.79 / b.90 / 1.0.0-a.69; Hostlists 71/64 (49/51/56/70 agressivas Guard; `deprecated: false`); tag v0.107.80 git/refs **403** unauth/rate (CDN ainda 0.107.79); path CDN = `adguardhome/`
 
-## AK. SARIF upload / third-party tooling / CI externo (2026-09-27)
+## AK. SARIF upload / third-party tooling / CI externo (AAAA-MM-DD)
 
-**Nota:** `notes/2026-09-27-20-github-sarif-upload-third-party-ci.md`  
-Fontes: [Upload SARIF](https://docs.github.com/en/code-security/how-tos/find-and-fix-code-vulnerabilities/integrate-with-existing-tools/upload-sarif-file) · [SARIF support](https://docs.github.com/en/code-security/reference/code-scanning/sarif-files/sarif-support) · [Troubleshoot uploads](https://docs.github.com/en/code-security/reference/code-scanning/sarif-files/troubleshoot-sarif-uploads) · [Existing CI](https://docs.github.com/en/code-security/how-tos/find-and-fix-code-vulnerabilities/integrate-with-existing-tools/use-with-existing-ci-system) · [Upload results CLI](https://docs.github.com/en/code-security/tutorials/customize-code-scanning/upload-results) · [REST code scanning](https://docs.github.com/en/rest/code-scanning/code-scanning) · [Managing PATs](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) (acesso **2026-09-27 ~19:39**)
+**Nota:** `notes/<nota>.md`  
+Fontes: [Upload SARIF](https://docs.github.com/en/code-security/how-tos/find-and-fix-code-vulnerabilities/integrate-with-existing-tools/upload-sarif-file) · [SARIF support](https://docs.github.com/en/code-security/reference/code-scanning/sarif-files/sarif-support) · [Troubleshoot uploads](https://docs.github.com/en/code-security/reference/code-scanning/sarif-files/troubleshoot-sarif-uploads) · [Existing CI](https://docs.github.com/en/code-security/how-tos/find-and-fix-code-vulnerabilities/integrate-with-existing-tools/use-with-existing-ci-system) · [Upload results CLI](https://docs.github.com/en/code-security/tutorials/customize-code-scanning/upload-results) · [REST code scanning](https://docs.github.com/en/rest/code-scanning/code-scanning) · [Managing PATs](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) (acesso **AAAA-MM-DD ~19:39**)
 
 - [ ] CodeQL em Actions (default/advanced) = upload **automático** — sem mintar PAT
 - [ ] Third-party em Actions: `github/codeql-action/upload-sarif@v4` + `permissions.security-events: write` (+ `actions:read`/`contents:read` privado)
@@ -697,10 +696,10 @@ Fontes: [Upload SARIF](https://docs.github.com/en/code-security/how-tos/find-and
 - [ ] Árvore: Actions GITHUB_TOKEN → App CI → FG Code scanning alerts → classic último
 - [ ] Gaps FG reconfirmados inalterados; cap 50 (~19:39); AGH 0.107.79 / b.90 / 1.0.0-a.69; Hostlists 71/64 (49/51/56/70 agressivas Guard; `deprecated: false`); tag v0.107.80 git/refs **403** rate (CDN ainda 0.107.79); path CDN = `adguardhome/`
 
-## AL. Security campaigns + alert tracking with Issues (2026-09-27)
+## AL. Security campaigns + alert tracking with Issues (AAAA-MM-DD)
 
-**Nota:** `notes/2026-09-27-21-github-security-campaigns-alert-tracking-issues.md`  
-Fontes: [About campaigns](https://docs.github.com/en/code-security/concepts/security-at-scale/about-security-campaigns) · [Creating/managing](https://docs.github.com/en/code-security/how-tos/manage-security-alerts/remediate-alerts-at-scale/creating-managing-security-campaigns) · [Tracking](https://docs.github.com/en/code-security/how-tos/manage-security-alerts/remediate-alerts-at-scale/tracking-security-campaigns) · [Fixing in campaign](https://docs.github.com/en/code-security/how-tos/manage-security-alerts/remediate-alerts-at-scale/fixing-alerts-in-security-campaign) · [Best practice scale](https://docs.github.com/en/code-security/tutorials/secure-your-organization/best-practice-fix-alerts-at-scale) · [Alert↔issues concepts](https://docs.github.com/en/code-security/concepts/code-scanning/alert-tracking-with-issues) · [Link to issues](https://docs.github.com/en/code-security/how-tos/manage-security-alerts/manage-code-scanning-alerts/track-alerts-in-issues) · [REST campaigns](https://docs.github.com/en/rest/campaigns/campaigns) · [Managing PATs](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) (acesso **2026-09-27 ~20:50**)
+**Nota:** `notes/<nota>.md`  
+Fontes: [About campaigns](https://docs.github.com/en/code-security/concepts/security-at-scale/about-security-campaigns) · [Creating/managing](https://docs.github.com/en/code-security/how-tos/manage-security-alerts/remediate-alerts-at-scale/creating-managing-security-campaigns) · [Tracking](https://docs.github.com/en/code-security/how-tos/manage-security-alerts/remediate-alerts-at-scale/tracking-security-campaigns) · [Fixing in campaign](https://docs.github.com/en/code-security/how-tos/manage-security-alerts/remediate-alerts-at-scale/fixing-alerts-in-security-campaign) · [Best practice scale](https://docs.github.com/en/code-security/tutorials/secure-your-organization/best-practice-fix-alerts-at-scale) · [Alert↔issues concepts](https://docs.github.com/en/code-security/concepts/code-scanning/alert-tracking-with-issues) · [Link to issues](https://docs.github.com/en/code-security/how-tos/manage-security-alerts/manage-code-scanning-alerts/track-alerts-in-issues) · [REST campaigns](https://docs.github.com/en/rest/campaigns/campaigns) · [Managing PATs](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) (acesso **AAAA-MM-DD ~20:50**)
 
 - [ ] Enablement at scale = security configurations (§AC) — **não** é campanha
 - [ ] Burn-down focado (CWE/classe) com developers = **security campaign** (UI org Security and quality → Campaigns)
@@ -718,10 +717,10 @@ Fontes: [About campaigns](https://docs.github.com/en/code-security/concepts/secu
 - [ ] Árvore: UI campaign → campaign issues checkbox → alert↔issue Tracking → REST `security_events`/FG CS read → App → classic amplo último
 - [ ] Gaps FG reconfirmados inalterados; cap 50 (~20:45); AGH 0.107.79 / b.90 / 1.0.0-a.69; Hostlists 71/64 (49/51/56/70 agressivas Guard; `deprecated: false`); tag v0.107.80 git/refs **404** (CDN ainda 0.107.79); path CDN = `adguardhome/`
 
-## AM. Code Quality thresholds + tool status + SARIF residual (2026-09-27)
+## AM. Code Quality thresholds + tool status + SARIF residual (AAAA-MM-DD)
 
-**Nota:** `notes/2026-09-27-22-github-code-quality-thresholds-tool-status-sarif.md`  
-Fontes: [Set PR thresholds](https://docs.github.com/en/code-security/how-tos/maintain-quality-code/set-pr-thresholds) · [Enable Code Quality](https://docs.github.com/en/code-security/how-tos/maintain-quality-code/enable-code-quality) · [Restrict code coverage](https://docs.github.com/en/code-security/how-tos/maintain-quality-code/restrict-code-coverage) · [Set up code coverage](https://docs.github.com/en/code-security/how-tos/maintain-quality-code/set-up-code-coverage) · [Tool status concepts](https://docs.github.com/en/code-security/concepts/code-scanning/tool-status-page) · [Use tool status](https://docs.github.com/en/code-security/how-tos/find-and-fix-code-vulnerabilities/manage-your-configuration/use-the-tools-status-page-for-code-scanning) · [Available rules](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/available-rules-for-rulesets) · [Troubleshoot SARIF](https://docs.github.com/en/code-security/reference/code-scanning/sarif-files/troubleshoot-sarif-uploads) · [Managing PATs](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) (acesso **2026-09-27 ~21:48**)
+**Nota:** `notes/<nota>.md`  
+Fontes: [Set PR thresholds](https://docs.github.com/en/code-security/how-tos/maintain-quality-code/set-pr-thresholds) · [Enable Code Quality](https://docs.github.com/en/code-security/how-tos/maintain-quality-code/enable-code-quality) · [Restrict code coverage](https://docs.github.com/en/code-security/how-tos/maintain-quality-code/restrict-code-coverage) · [Set up code coverage](https://docs.github.com/en/code-security/how-tos/maintain-quality-code/set-up-code-coverage) · [Tool status concepts](https://docs.github.com/en/code-security/concepts/code-scanning/tool-status-page) · [Use tool status](https://docs.github.com/en/code-security/how-tos/find-and-fix-code-vulnerabilities/manage-your-configuration/use-the-tools-status-page-for-code-scanning) · [Available rules](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/available-rules-for-rulesets) · [Troubleshoot SARIF](https://docs.github.com/en/code-security/reference/code-scanning/sarif-files/troubleshoot-sarif-uploads) · [Managing PATs](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) (acesso **AAAA-MM-DD ~21:48**)
 
 - [ ] Security CS gate = Require **code scanning** results (§AJ) — **≠** Code Quality gate
 - [ ] Quality gate = Enable Code Quality (UI) → confirmar check **"CodeQL - Code Quality"** no PR → Require **code quality results**
@@ -742,10 +741,10 @@ Fontes: [Set PR thresholds](https://docs.github.com/en/code-security/how-tos/mai
 - [ ] Árvore: UI enable/gate/tool status → coverage GITHUB_TOKEN → FG Administration ruleset → App → classic último
 - [ ] Gaps FG reconfirmados inalterados; cap 50 (~21:45); AGH 0.107.79 / b.90 / 1.0.0-a.69; Hostlists 71/64 (49/51/56/70 agressivas Guard; `deprecated: false`); tag v0.107.80 git/refs **404** (CDN ainda 0.107.79); path CDN = `adguardhome/`
 
-## AN. Private vulnerability reporting + repository advisories + security managers (2026-09-27)
+## AN. Private vulnerability reporting + repository advisories + security managers (AAAA-MM-DD)
 
-**Nota:** `notes/2026-09-27-23-github-private-vulnerability-reporting-repository-advisories.md`  
-Fontes: [Coordinated disclosure](https://docs.github.com/en/code-security/concepts/vulnerability-reporting-and-management/coordinated-disclosure) · [Repository advisories](https://docs.github.com/en/code-security/concepts/vulnerability-reporting-and-management/repository-security-advisories) · [Configure PVR repo](https://docs.github.com/en/code-security/how-tos/report-and-fix-vulnerabilities/configure-vulnerability-reporting/configure-for-a-repository) · [Report privately](https://docs.github.com/en/code-security/how-tos/report-and-fix-vulnerabilities/report-privately) · [Manage reports](https://docs.github.com/en/code-security/how-tos/report-and-fix-vulnerabilities/fix-reported-vulnerabilities/manage-vulnerability-reports) · [Create](https://docs.github.com/en/code-security/how-tos/report-and-fix-vulnerabilities/fix-reported-vulnerabilities/create-repository-advisory) · [Publish](https://docs.github.com/en/code-security/how-tos/report-and-fix-vulnerabilities/fix-reported-vulnerabilities/publish-repository-advisory) · [Collaborators](https://docs.github.com/en/code-security/how-tos/report-and-fix-vulnerabilities/fix-reported-vulnerabilities/add-collaborators) · [SECURITY.md](https://docs.github.com/en/code-security/getting-started/adding-a-security-policy-to-your-repository) · [Security managers](https://docs.github.com/en/organizations/managing-peoples-access-to-your-organization-with-roles/managing-security-managers-in-your-organization) · [REST advisories](https://docs.github.com/en/rest/security-advisories/repository-advisories) · [FG permissions](https://docs.github.com/en/rest/authentication/permissions-required-for-fine-grained-personal-access-tokens#repository-permissions-for-repository-security-advisories) · [Managing PATs](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) (acesso **2026-09-27 ~22:46**)
+**Nota:** `notes/<nota>.md`  
+Fontes: [Coordinated disclosure](https://docs.github.com/en/code-security/concepts/vulnerability-reporting-and-management/coordinated-disclosure) · [Repository advisories](https://docs.github.com/en/code-security/concepts/vulnerability-reporting-and-management/repository-security-advisories) · [Configure PVR repo](https://docs.github.com/en/code-security/how-tos/report-and-fix-vulnerabilities/configure-vulnerability-reporting/configure-for-a-repository) · [Report privately](https://docs.github.com/en/code-security/how-tos/report-and-fix-vulnerabilities/report-privately) · [Manage reports](https://docs.github.com/en/code-security/how-tos/report-and-fix-vulnerabilities/fix-reported-vulnerabilities/manage-vulnerability-reports) · [Create](https://docs.github.com/en/code-security/how-tos/report-and-fix-vulnerabilities/fix-reported-vulnerabilities/create-repository-advisory) · [Publish](https://docs.github.com/en/code-security/how-tos/report-and-fix-vulnerabilities/fix-reported-vulnerabilities/publish-repository-advisory) · [Collaborators](https://docs.github.com/en/code-security/how-tos/report-and-fix-vulnerabilities/fix-reported-vulnerabilities/add-collaborators) · [SECURITY.md](https://docs.github.com/en/code-security/getting-started/adding-a-security-policy-to-your-repository) · [Security managers](https://docs.github.com/en/organizations/managing-peoples-access-to-your-organization-with-roles/managing-security-managers-in-your-organization) · [REST advisories](https://docs.github.com/en/rest/security-advisories/repository-advisories) · [FG permissions](https://docs.github.com/en/rest/authentication/permissions-required-for-fine-grained-personal-access-tokens#repository-permissions-for-repository-security-advisories) · [Managing PATs](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) (acesso **AAAA-MM-DD ~22:46**)
 
 - [ ] PVR ≠ SECURITY.md — policy = contacto; PVR = formulário/REST só se enabled (repos **públicos**)
 - [ ] Enable PVR = **UI** Settings → Advanced Security → Private vulnerability reporting — **sem** mintar classic
@@ -762,10 +761,10 @@ Fontes: [Coordinated disclosure](https://docs.github.com/en/code-security/concep
 - [ ] Árvore: UI PVR/draft/publish → FG Repository security advisories → App → classic `repo`/`repository_advisories` último
 - [ ] Gaps FG reconfirmados inalterados; cap 50 (~22:45); AGH 0.107.79 / b.90 / 1.0.0-a.69; Hostlists 71/64 (49/51/56/70 agressivas Guard; `deprecated: false`); tag v0.107.80 git/refs **404** (CDN ainda 0.107.79); path CDN = `adguardhome/`
 
-## AO. Temporary private fork ops + writing advisories best practices (2026-09-27)
+## AO. Temporary private fork ops + writing advisories best practices (AAAA-MM-DD)
 
-**Nota:** `notes/2026-09-27-24-github-advisory-private-fork-write-best-practices.md`  
-Fontes: [Collaborate in a fork](https://docs.github.com/en/code-security/tutorials/fix-reported-vulnerabilities/collaborate-in-a-fork) · [Write security advisories](https://docs.github.com/en/code-security/tutorials/fix-reported-vulnerabilities/write-security-advisories) · [Permissions](https://docs.github.com/en/code-security/reference/permissions/repository-security-advisory) · [REST advisories](https://docs.github.com/en/rest/security-advisories/repository-advisories) · [GAD](https://docs.github.com/en/code-security/concepts/vulnerability-reporting-and-management/github-advisory-database) · [Managing PATs](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) (acesso **2026-09-27 ~23:47 BRT**)
+**Nota:** `notes/<nota>.md`  
+Fontes: [Collaborate in a fork](https://docs.github.com/en/code-security/tutorials/fix-reported-vulnerabilities/collaborate-in-a-fork) · [Write security advisories](https://docs.github.com/en/code-security/tutorials/fix-reported-vulnerabilities/write-security-advisories) · [Permissions](https://docs.github.com/en/code-security/reference/permissions/repository-security-advisory) · [REST advisories](https://docs.github.com/en/rest/security-advisories/repository-advisories) · [GAD](https://docs.github.com/en/code-security/concepts/vulnerability-reporting-and-management/github-advisory-database) · [Managing PATs](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) (acesso **AAAA-MM-DD ~23:47 BRT**)
 
 - [ ] Pré-req fork = draft advisory; UI Start a temporary private fork — **sem** mintar classic
 - [ ] Nome `repo-ghsa-xxxx-xxxx-xxxx` (repo ≤80 chars); charset GHSA DOC
@@ -781,10 +780,10 @@ Fontes: [Collaborate in a fork](https://docs.github.com/en/code-security/tutoria
 - [ ] Árvore: UI fork/PR/merge → FG write create+fork → App → classic último
 - [ ] Gaps FG reconfirmados inalterados; cap 50 (~23:47); AGH 0.107.79 / b.90 / 1.0.0-a.69; Hostlists 71/64 (49/51/56/70 agressivas Guard; `deprecated: false`); tag v0.107.80 git/refs **404** (CDN ainda 0.107.79); path CDN = `adguardhome/`
 
-## AP. Edit/delete repository advisories + Improve global GAD (2026-09-28)
+## AP. Edit/delete repository advisories + Improve global GAD (AAAA-MM-DD)
 
-**Nota:** `notes/2026-09-28-01-github-edit-delete-advisory-global-gad.md`  
-Fontes: [Edit repository advisories](https://docs.github.com/en/code-security/how-tos/report-and-fix-vulnerabilities/fix-reported-vulnerabilities/edit-repository-advisories) · [Delete](https://docs.github.com/en/code-security/how-tos/report-and-fix-vulnerabilities/fix-reported-vulnerabilities/delete-repository-advisories) · [Edit Advisory Database](https://docs.github.com/en/code-security/how-tos/report-and-fix-vulnerabilities/fix-reported-vulnerabilities/edit-advisory-database) · [About GAD](https://docs.github.com/en/code-security/concepts/vulnerability-reporting-and-management/about-the-github-advisory-database) · [Browse](https://docs.github.com/en/code-security/how-tos/report-and-fix-vulnerabilities/fix-reported-vulnerabilities/browse-advisory-database) · [Permissions](https://docs.github.com/en/code-security/reference/permissions/repository-security-advisory) · [REST](https://docs.github.com/en/rest/security-advisories/repository-advisories) · [Innersource withdraw](https://docs.github.com/en/code-security/how-tos/secure-your-supply-chain/secure-your-dependencies/manage-innersource-advisories) · [CONTRIBUTING](https://github.com/github/advisory-database/blob/main/CONTRIBUTING.md) · [Managing PATs](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) (acesso **2026-09-28 ~00:40 BRT**)
+**Nota:** `notes/<nota>.md`  
+Fontes: [Edit repository advisories](https://docs.github.com/en/code-security/how-tos/report-and-fix-vulnerabilities/fix-reported-vulnerabilities/edit-repository-advisories) · [Delete](https://docs.github.com/en/code-security/how-tos/report-and-fix-vulnerabilities/fix-reported-vulnerabilities/delete-repository-advisories) · [Edit Advisory Database](https://docs.github.com/en/code-security/how-tos/report-and-fix-vulnerabilities/fix-reported-vulnerabilities/edit-advisory-database) · [About GAD](https://docs.github.com/en/code-security/concepts/vulnerability-reporting-and-management/about-the-github-advisory-database) · [Browse](https://docs.github.com/en/code-security/how-tos/report-and-fix-vulnerabilities/fix-reported-vulnerabilities/browse-advisory-database) · [Permissions](https://docs.github.com/en/code-security/reference/permissions/repository-security-advisory) · [REST](https://docs.github.com/en/rest/security-advisories/repository-advisories) · [Innersource withdraw](https://docs.github.com/en/code-security/how-tos/secure-your-supply-chain/secure-your-dependencies/manage-innersource-advisories) · [CONTRIBUTING](https://github.com/github/advisory-database/blob/main/CONTRIBUTING.md) · [Managing PATs](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) (acesso **AAAA-MM-DD ~00:40 BRT**)
 
 - [ ] Edit repo advisory = UI **Edit advisory** (Security and quality → Advisories) — **sem** mintar classic
 - [ ] Edit metadata/credits/CVE/severity/CWE/affected products = **admin** no advisory; write = fork commits/PRs (§AO)
@@ -801,10 +800,10 @@ Fontes: [Edit repository advisories](https://docs.github.com/en/code-security/ho
 - [ ] Árvore: UI Edit/Suggest/Support → FG write PATCH → App → classic último
 - [ ] Gaps FG reconfirmados inalterados; cap 50 (~00:40); AGH 0.107.79 / b.90 / 1.0.0-a.69; Hostlists 71/64 (49/51/56/70 agressivas Guard; `deprecated: false`); tag v0.107.80 **ausente** (`git ls-remote`; CDN ainda 0.107.79); path CDN = `adguardhome/`
 
-## AQ. Global advisories REST + browse GAD + Dependabot from advisory (2026-09-28)
+## AQ. Global advisories REST + browse GAD + Dependabot from advisory (AAAA-MM-DD)
 
-**Nota:** `notes/2026-09-28-02-github-global-advisories-rest-dependabot-from-gad.md`  
-Fontes: [REST global advisories](https://docs.github.com/en/rest/security-advisories/global-advisories) · [Browse GAD](https://docs.github.com/en/code-security/how-tos/report-and-fix-vulnerabilities/fix-reported-vulnerabilities/browse-advisory-database) · [About Dependabot alerts](https://docs.github.com/en/code-security/concepts/supply-chain-security/about-dependabot-alerts) · [REST Dependabot alerts](https://docs.github.com/en/rest/dependabot/alerts) · [FG Dependabot alerts](https://docs.github.com/en/rest/authentication/permissions-required-for-fine-grained-personal-access-tokens#repository-permissions-for-dependabot-alerts) · [Managing PATs](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) (acesso **2026-09-28 ~01:40 BRT**)
+**Nota:** `notes/<nota>.md`  
+Fontes: [REST global advisories](https://docs.github.com/en/rest/security-advisories/global-advisories) · [Browse GAD](https://docs.github.com/en/code-security/how-tos/report-and-fix-vulnerabilities/fix-reported-vulnerabilities/browse-advisory-database) · [About Dependabot alerts](https://docs.github.com/en/code-security/concepts/supply-chain-security/about-dependabot-alerts) · [REST Dependabot alerts](https://docs.github.com/en/rest/dependabot/alerts) · [FG Dependabot alerts](https://docs.github.com/en/rest/authentication/permissions-required-for-fine-grained-personal-access-tokens#repository-permissions-for-dependabot-alerts) · [Managing PATs](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) (acesso **AAAA-MM-DD ~01:40 BRT**)
 
 - [ ] Browse GAD = UI `github.com/advisories` — **sem** mintar classic
 - [ ] REST global: `GET /advisories` · `GET /advisories/{ghsa_id}` — leitura pública típica; default = reviewed **não**-malware (`type=malware` para malware)
@@ -820,10 +819,10 @@ Fontes: [REST global advisories](https://docs.github.com/en/rest/security-adviso
 - [ ] Árvore: UI browse/Dependabot alerts → unauth/light `GET /advisories` → FG Dependabot alerts → App → classic `security_events`/`repo` último
 - [ ] Gaps FG reconfirmados inalterados; cap 50 (~01:40); AGH 0.107.79 / b.90 / 1.0.0-a.69; Hostlists 71/64 (49/51/56/70 agressivas Guard; `deprecated: false`); tag v0.107.80 **ausente** (`git ls-remote`; CDN ainda 0.107.79); path CDN = `adguardhome/`
 
-## AR. GraphQL GAD + Dependabot assign / AI agents (2026-09-28)
+## AR. GraphQL GAD + Dependabot assign / AI agents (AAAA-MM-DD)
 
-**Nota:** `notes/2026-09-28-03-github-graphql-gad-dependabot-assign-agent.md`  
-Fontes: [GraphQL security advisories](https://docs.github.com/en/graphql/reference/security-advisories) · [Forming calls](https://docs.github.com/en/graphql/guides/forming-calls-with-graphql) · [GraphQL rate limits](https://docs.github.com/en/graphql/overview/rate-limits-and-node-limits-for-the-graphql-api) · [Browse GAD](https://docs.github.com/en/code-security/how-tos/report-and-fix-vulnerabilities/fix-reported-vulnerabilities/browse-advisory-database) · [About Dependabot alerts](https://docs.github.com/en/code-security/concepts/supply-chain-security/about-dependabot-alerts) · [Viewing/updating alerts](https://docs.github.com/en/code-security/how-tos/manage-security-alerts/manage-dependabot-alerts/viewing-and-updating-dependabot-alerts) · [REST Dependabot alerts](https://docs.github.com/en/rest/dependabot/alerts) · [Managing PATs](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) (acesso **2026-09-28 ~02:42 BRT**)
+**Nota:** `notes/<nota>.md`  
+Fontes: [GraphQL security advisories](https://docs.github.com/en/graphql/reference/security-advisories) · [Forming calls](https://docs.github.com/en/graphql/guides/forming-calls-with-graphql) · [GraphQL rate limits](https://docs.github.com/en/graphql/overview/rate-limits-and-node-limits-for-the-graphql-api) · [Browse GAD](https://docs.github.com/en/code-security/how-tos/report-and-fix-vulnerabilities/fix-reported-vulnerabilities/browse-advisory-database) · [About Dependabot alerts](https://docs.github.com/en/code-security/concepts/supply-chain-security/about-dependabot-alerts) · [Viewing/updating alerts](https://docs.github.com/en/code-security/how-tos/manage-security-alerts/manage-dependabot-alerts/viewing-and-updating-dependabot-alerts) · [REST Dependabot alerts](https://docs.github.com/en/rest/dependabot/alerts) · [Managing PATs](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) (acesso **AAAA-MM-DD ~02:42 BRT**)
 
 - [ ] GraphQL GAD: `securityAdvisories` · `securityAdvisory(ghsaId)` · `securityVulnerabilities` — endpoint `POST /graphql`
 - [ ] Classification GraphQL: `GENERAL` / `MALWARE` (unreviewed = eixo UI/REST §AQ; não inventar enum)
@@ -836,13 +835,13 @@ Fontes: [GraphQL security advisories](https://docs.github.com/en/graphql/referen
 - [ ] REST PATCH: `assignees` (replace; `[]` limpa; bot login p/ agent) + `agent_assignment` (`custom_instructions` / `custom_agent` / `model`)
 - [ ] Filtro list `assignee`: logins · `*` · `none`; webhook `dependabot_alert` / `assignees_changed`
 - [ ] Auth assign: UI first · FG **Dependabot alerts** write · App · classic `security_events`/`repo` último
-- [ ] Agent assign só com autorização Bruno; preferir webhook a polling
+- [ ] Agent assign só com autorização do dono; preferir webhook a polling
 - [ ] Gaps FG reconfirmados inalterados; cap 50 (~02:42); AGH 0.107.79 / b.90 / 1.0.0-a.69; Hostlists 71/64 (49/51/56/70 agressivas Guard; `deprecated: false`); tag v0.107.80 **ausente** (`git ls-remote`; CDN ainda 0.107.79); path CDN = `adguardhome/`
 
-## AS. Security overview (org) + Dependabot alert webhooks (2026-09-28)
+## AS. Security overview (org) + Dependabot alert webhooks (AAAA-MM-DD)
 
-**Nota:** `notes/2026-09-28-04-github-security-overview-dependabot-webhooks.md`  
-Fontes: [Security overview](https://docs.github.com/en/code-security/concepts/security-at-scale/security-overview) · [Permissions](https://docs.github.com/en/code-security/reference/permissions/security-overview) · [Viewing insights](https://docs.github.com/en/code-security/how-tos/view-and-interpret-data/analyze-organization-data/viewing-security-insights) · [Assessing risk](https://docs.github.com/en/code-security/how-tos/view-and-interpret-data/analyze-organization-data/assessing-code-security-risk) · [Assessing adoption](https://docs.github.com/en/code-security/how-tos/view-and-interpret-data/analyze-organization-data/assessing-adoption-code-security) · [Filtering](https://docs.github.com/en/code-security/how-tos/manage-security-alerts/remediate-alerts-at-scale/filtering-alerts-in-security-overview) · [Dashboard metrics](https://docs.github.com/en/code-security/reference/security-at-scale/overview-dashboard-metrics) · [Export CSV](https://docs.github.com/en/code-security/how-tos/view-and-interpret-data/analyze-organization-data/exporting-data-from-security-overview) · [Dependabot metrics](https://docs.github.com/en/code-security/how-tos/view-and-interpret-data/analyze-organization-data/viewing-metrics-for-dependabot-alerts) · [Webhooks dependabot_alert](https://docs.github.com/en/webhooks/webhook-events-and-payloads#dependabot_alert) · [Managing PATs](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) (acesso **2026-09-28 ~03:49 BRT**)
+**Nota:** `notes/<nota>.md`  
+Fontes: [Security overview](https://docs.github.com/en/code-security/concepts/security-at-scale/security-overview) · [Permissions](https://docs.github.com/en/code-security/reference/permissions/security-overview) · [Viewing insights](https://docs.github.com/en/code-security/how-tos/view-and-interpret-data/analyze-organization-data/viewing-security-insights) · [Assessing risk](https://docs.github.com/en/code-security/how-tos/view-and-interpret-data/analyze-organization-data/assessing-code-security-risk) · [Assessing adoption](https://docs.github.com/en/code-security/how-tos/view-and-interpret-data/analyze-organization-data/assessing-adoption-code-security) · [Filtering](https://docs.github.com/en/code-security/how-tos/manage-security-alerts/remediate-alerts-at-scale/filtering-alerts-in-security-overview) · [Dashboard metrics](https://docs.github.com/en/code-security/reference/security-at-scale/overview-dashboard-metrics) · [Export CSV](https://docs.github.com/en/code-security/how-tos/view-and-interpret-data/analyze-organization-data/exporting-data-from-security-overview) · [Dependabot metrics](https://docs.github.com/en/code-security/how-tos/view-and-interpret-data/analyze-organization-data/viewing-metrics-for-dependabot-alerts) · [Webhooks dependabot_alert](https://docs.github.com/en/webhooks/webhook-events-and-payloads#dependabot_alert) · [Managing PATs](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) (acesso **AAAA-MM-DD ~03:49 BRT**)
 
 - [ ] Security overview = org/enterprise → **Security and quality** — **UI first**, sem mintar classic/FG só para “ver postura”
 - [ ] Team: free secret risk assessment; insights extras = Secret Protection / Code Security
@@ -862,10 +861,10 @@ Fontes: [Security overview](https://docs.github.com/en/code-security/concepts/se
 - [ ] Árvore: UI overview/dashboard → webhook App read → FG Dependabot alerts → classic `security_events`/`repo` último
 - [ ] Gaps FG reconfirmados inalterados; cap 50 (~03:49); AGH 0.107.79 / b.90 / 1.0.0-a.69; Hostlists 71/64 (49/51/56/70 agressivas Guard; `deprecated: false`); tag v0.107.80 **ausente** (`git ls-remote`; CDN ainda 0.107.79); path CDN = `adguardhome/`
 
-## AT. GraphQL securityVulnerabilities package monitor + overview filters reference (2026-09-28)
+## AT. GraphQL securityVulnerabilities package monitor + overview filters reference (AAAA-MM-DD)
 
-**Nota:** `notes/2026-09-28-05-github-securityvulnerabilities-package-monitor-overview-filters.md`  
-Fontes: [GraphQL security advisories](https://docs.github.com/en/graphql/reference/security-advisories) · [Forming calls](https://docs.github.com/en/graphql/guides/forming-calls-with-graphql) · [GraphQL rate limits](https://docs.github.com/en/graphql/overview/rate-limits-and-node-limits-for-the-graphql-api) · [About GAD](https://docs.github.com/en/code-security/concepts/vulnerability-reporting-and-management/about-the-github-advisory-database) · [Browse GAD](https://docs.github.com/en/code-security/how-tos/report-and-fix-vulnerabilities/fix-reported-vulnerabilities/browse-advisory-database) · [Available filters](https://docs.github.com/en/code-security/reference/security-at-scale/available-filters-for-security-overview) · [Filtering](https://docs.github.com/en/code-security/how-tos/manage-security-alerts/remediate-alerts-at-scale/filtering-alerts-in-security-overview) · [Managing PATs](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) (acesso **2026-09-28 ~04:42 BRT**)
+**Nota:** `notes/<nota>.md`  
+Fontes: [GraphQL security advisories](https://docs.github.com/en/graphql/reference/security-advisories) · [Forming calls](https://docs.github.com/en/graphql/guides/forming-calls-with-graphql) · [GraphQL rate limits](https://docs.github.com/en/graphql/overview/rate-limits-and-node-limits-for-the-graphql-api) · [About GAD](https://docs.github.com/en/code-security/concepts/vulnerability-reporting-and-management/about-the-github-advisory-database) · [Browse GAD](https://docs.github.com/en/code-security/how-tos/report-and-fix-vulnerabilities/fix-reported-vulnerabilities/browse-advisory-database) · [Available filters](https://docs.github.com/en/code-security/reference/security-at-scale/available-filters-for-security-overview) · [Filtering](https://docs.github.com/en/code-security/how-tos/manage-security-alerts/remediate-alerts-at-scale/filtering-alerts-in-security-overview) · [Managing PATs](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) (acesso **AAAA-MM-DD ~04:42 BRT**)
 
 - [ ] `securityVulnerabilities` = eixo **package/version**; `securityAdvisories` = eixo **advisory**; nested `advisory.vulnerabilities` = mesmo tipo filtrado dentro de um GHSA
 - [ ] Args package-monitor: `ecosystem` · `package` · `severities` · `classifications` · `orderBy(UPDATED_AT)` · cursor — **sem** identifier/EPSS/publishedSince (usar `securityAdvisories` ou `advisory {…}`)
@@ -883,10 +882,10 @@ Fontes: [GraphQL security advisories](https://docs.github.com/en/graphql/referen
 - [ ] Árvore: UI GAD/overview → GraphQL package App/FG → webhook Dependabot → FG alerts write → classic último
 - [ ] Gaps FG reconfirmados inalterados; cap 50 (~04:42); AGH 0.107.79 / b.90 / 1.0.0-a.69; Hostlists 71/64 (49/51/56/70 agressivas Guard; `deprecated: false`); tag v0.107.80 **ausente** (`git ls-remote`; CDN ainda 0.107.79); path CDN = `adguardhome/`
 
-## AU. Secret scanning push protection metrics + delegated bypass (2026-09-28)
+## AU. Secret scanning push protection metrics + delegated bypass (AAAA-MM-DD)
 
-**Nota:** `notes/2026-09-28-06-github-secret-scanning-push-protection-metrics-delegated-bypass.md`  
-Fontes: [SS push protection metrics](https://docs.github.com/en/code-security/how-tos/view-and-interpret-data/analyze-organization-data/viewing-metrics-for-secret-scanning-push-protection) · [Dashboard metrics](https://docs.github.com/en/code-security/reference/security-at-scale/overview-dashboard-metrics) · [Delegated bypass](https://docs.github.com/en/code-security/concepts/secret-security/delegated-bypass) · [Enable delegated bypass](https://docs.github.com/en/code-security/how-tos/secure-your-secrets/manage-bypass-requests/enable-delegated-bypass) · [Review bypass requests](https://docs.github.com/en/code-security/how-tos/secure-your-secrets/manage-bypass-requests/review-bypass-requests) · [REST delegated-bypass](https://docs.github.com/en/rest/secret-scanning/delegated-bypass) · [Available filters](https://docs.github.com/en/code-security/reference/security-at-scale/available-filters-for-security-overview) · [CodeQL PR metrics](https://docs.github.com/en/code-security/how-tos/view-and-interpret-data/analyze-organization-data/viewing-metrics-for-pull-request-alerts) · [PR alert metrics concept](https://docs.github.com/en/code-security/concepts/code-scanning/pull-request-alert-metrics) · [Managing PATs](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) (acesso **2026-09-28 ~05:42 BRT**)
+**Nota:** `notes/<nota>.md`  
+Fontes: [SS push protection metrics](https://docs.github.com/en/code-security/how-tos/view-and-interpret-data/analyze-organization-data/viewing-metrics-for-secret-scanning-push-protection) · [Dashboard metrics](https://docs.github.com/en/code-security/reference/security-at-scale/overview-dashboard-metrics) · [Delegated bypass](https://docs.github.com/en/code-security/concepts/secret-security/delegated-bypass) · [Enable delegated bypass](https://docs.github.com/en/code-security/how-tos/secure-your-secrets/manage-bypass-requests/enable-delegated-bypass) · [Review bypass requests](https://docs.github.com/en/code-security/how-tos/secure-your-secrets/manage-bypass-requests/review-bypass-requests) · [REST delegated-bypass](https://docs.github.com/en/rest/secret-scanning/delegated-bypass) · [Available filters](https://docs.github.com/en/code-security/reference/security-at-scale/available-filters-for-security-overview) · [CodeQL PR metrics](https://docs.github.com/en/code-security/how-tos/view-and-interpret-data/analyze-organization-data/viewing-metrics-for-pull-request-alerts) · [PR alert metrics concept](https://docs.github.com/en/code-security/concepts/code-scanning/pull-request-alert-metrics) · [Managing PATs](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) (acesso **AAAA-MM-DD ~05:42 BRT**)
 
 - [ ] Insights → **Secret scanning** (public preview) = métricas PP; date picker = data do **bypass**
 - [ ] Detection → **Secrets bypassed or blocked**: Bypassed vs Successfully blocked; View details → SS report
@@ -905,10 +904,10 @@ Fontes: [SS push protection metrics](https://docs.github.com/en/code-security/ho
 - [ ] Gaps FG reconfirmados inalterados; cap 50 (~05:42); AGH 0.107.79 / b.90 / 1.0.0-a.69; Hostlists 71/64 (49/51/56/70 agressivas Guard; `deprecated: false`); tag v0.107.80 **ausente** (`git ls-remote`; CDN ainda 0.107.79); path CDN = `adguardhome/`
 
 
-## AV. CodeQL PR metrics + Autofix MTTR / Prevention (2026-09-28)
+## AV. CodeQL PR metrics + Autofix MTTR / Prevention (AAAA-MM-DD)
 
-**Nota:** `notes/2026-09-28-07-github-codeql-pr-metrics-autofix-mttr.md`  
-Fontes: [View PR alert metrics](https://docs.github.com/en/code-security/how-tos/view-and-interpret-data/analyze-organization-data/viewing-metrics-for-pull-request-alerts) · [PR alert metrics concept](https://docs.github.com/en/code-security/concepts/code-scanning/pull-request-alert-metrics) · [Dashboard metrics](https://docs.github.com/en/code-security/reference/security-at-scale/overview-dashboard-metrics) · [Export data](https://docs.github.com/en/code-security/how-tos/view-and-interpret-data/analyze-organization-data/export-data) · [Autofix](https://docs.github.com/en/code-security/concepts/code-scanning/autofix-for-code-scanning) · [Disable Autofix](https://docs.github.com/en/code-security/how-tos/manage-security-alerts/manage-code-scanning-alerts/disabling-autofix-for-code-scanning) · [Triage PRs](https://docs.github.com/en/code-security/how-tos/manage-security-alerts/manage-code-scanning-alerts/triage-alerts-in-pull-requests) · [Managing PATs](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) (acesso **2026-09-28 ~06:42 BRT**)
+**Nota:** `notes/<nota>.md`  
+Fontes: [View PR alert metrics](https://docs.github.com/en/code-security/how-tos/view-and-interpret-data/analyze-organization-data/viewing-metrics-for-pull-request-alerts) · [PR alert metrics concept](https://docs.github.com/en/code-security/concepts/code-scanning/pull-request-alert-metrics) · [Dashboard metrics](https://docs.github.com/en/code-security/reference/security-at-scale/overview-dashboard-metrics) · [Export data](https://docs.github.com/en/code-security/how-tos/view-and-interpret-data/analyze-organization-data/export-data) · [Autofix](https://docs.github.com/en/code-security/concepts/code-scanning/autofix-for-code-scanning) · [Disable Autofix](https://docs.github.com/en/code-security/how-tos/manage-security-alerts/manage-code-scanning-alerts/disabling-autofix-for-code-scanning) · [Triage PRs](https://docs.github.com/en/code-security/how-tos/manage-security-alerts/manage-code-scanning-alerts/triage-alerts-in-pull-requests) · [Managing PATs](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) (acesso **AAAA-MM-DD ~06:42 BRT**)
 
 - [ ] Insights → **CodeQL pull requests** (Team/Enterprise + Code Security); date picker = **creation** das PR alerts
 - [ ] Escopo: só PRs **merged** → **default** branch
@@ -927,10 +926,10 @@ Fontes: [View PR alert metrics](https://docs.github.com/en/code-security/how-tos
 - [ ] Gaps FG reconfirmados inalterados; cap 50 (~06:42); AGH 0.107.79 / b.90 / 1.0.0-a.69; Hostlists 71/64 (49/51/56/70 agressivas Guard; `deprecated: false`); tag v0.107.80 **ausente** (`git ls-remote`; CDN ainda 0.107.79); path CDN = `adguardhome/`
 
 
-## AW. Production context (linked artifacts / MDC) + custom props filters (2026-09-28)
+## AW. Production context (linked artifacts / MDC) + custom props filters (AAAA-MM-DD)
 
-**Nota:** `notes/2026-09-28-08-github-production-context-linked-artifacts-props-filters.md`  
-Fontes: [Prioritize production](https://docs.github.com/en/code-security/tutorials/secure-your-organization/prioritize-alerts-in-production-code) · [Linked artifacts](https://docs.github.com/en/code-security/concepts/supply-chain-security/linked-artifacts) · [Upload linked artifacts](https://docs.github.com/en/code-security/how-tos/secure-your-supply-chain/establish-provenance-and-integrity/upload-linked-artifacts) · [Available filters](https://docs.github.com/en/code-security/reference/security-at-scale/overview-dashboard-filters) · [Custom properties](https://docs.github.com/en/organizations/managing-organization-settings/managing-custom-properties-for-repositories-in-your-organization) · [REST artifact-metadata](https://docs.github.com/en/rest/orgs/artifact-metadata) · [Org security](https://docs.github.com/en/code-security/concepts/security-at-scale/organization-security) · [Managing PATs](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) (acesso **2026-09-28 ~07:38 BRT**)
+**Nota:** `notes/<nota>.md`  
+Fontes: [Prioritize production](https://docs.github.com/en/code-security/tutorials/secure-your-organization/prioritize-alerts-in-production-code) · [Linked artifacts](https://docs.github.com/en/code-security/concepts/supply-chain-security/linked-artifacts) · [Upload linked artifacts](https://docs.github.com/en/code-security/how-tos/secure-your-supply-chain/establish-provenance-and-integrity/upload-linked-artifacts) · [Available filters](https://docs.github.com/en/code-security/reference/security-at-scale/overview-dashboard-filters) · [Custom properties](https://docs.github.com/en/organizations/managing-organization-settings/managing-custom-properties-for-repositories-in-your-organization) · [REST artifact-metadata](https://docs.github.com/en/rest/orgs/artifact-metadata) · [Org security](https://docs.github.com/en/code-security/concepts/security-at-scale/organization-security) · [Managing PATs](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) (acesso **AAAA-MM-DD ~07:38 BRT**)
 
 - [ ] Production context = filtrar Dependabot/CS/campaigns por artifacts em produção (não “todos os alerts”)
 - [ ] Linked artifacts = metadata org-level de builds **Actions**; **não** guarda o arquivo; **não** lista deps OSS externas
@@ -950,10 +949,10 @@ Fontes: [Prioritize production](https://docs.github.com/en/code-security/tutoria
 - [ ] Gaps FG reconfirmados inalterados; cap 50 (~07:38); AGH 0.107.79 / b.90 / 1.0.0-a.69; Hostlists 71/64 (49/51/56/70 agressivas Guard; `deprecated: false`); tag v0.107.80 **ausente** (`git ls-remote`; CDN ainda 0.107.79); path CDN = `adguardhome/`
 
 
-## AX. Rulesets `deployable`/`deployed` + remove linked artifacts status (2026-09-28)
+## AX. Rulesets `deployable`/`deployed` + remove linked artifacts status (AAAA-MM-DD)
 
-**Nota:** `notes/2026-09-28-09-github-rulesets-deployable-deployed-remove-artifacts.md`  
-Fontes: [Changelog deployable/deployed GA](https://github.blog/changelog/2026-04-14-deployment-context-in-repository-properties-and-alerts/) · [Creating org rulesets](https://docs.github.com/en/organizations/managing-organization-settings/creating-rulesets-for-repositories-in-your-organization) · [Searching repositories](https://docs.github.com/en/search-github/searching-on-github/searching-for-repositories) · [Available rules](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/available-rules-for-rulesets) · [Remove linked artifacts](https://docs.github.com/en/code-security/how-tos/secure-your-supply-chain/establish-provenance-and-integrity/remove-linked-artifacts) · [REST org rules](https://docs.github.com/en/rest/orgs/rules) · [FG permissions](https://docs.github.com/en/rest/authentication/permissions-required-for-fine-grained-personal-access-tokens) · [Managing PATs](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) (acesso **2026-09-28 ~08:38 BRT**)
+**Nota:** `notes/<nota>.md`  
+Fontes: [Changelog deployable/deployed GA](https://github.blog/changelog/AAAA-MM-DD-deployment-context-in-repository-properties-and-alerts/) · [Creating org rulesets](https://docs.github.com/en/organizations/managing-organization-settings/creating-rulesets-for-repositories-in-your-organization) · [Searching repositories](https://docs.github.com/en/search-github/searching-on-github/searching-for-repositories) · [Available rules](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/available-rules-for-rulesets) · [Remove linked artifacts](https://docs.github.com/en/code-security/how-tos/secure-your-supply-chain/establish-provenance-and-integrity/remove-linked-artifacts) · [REST org rules](https://docs.github.com/en/rest/orgs/rules) · [FG permissions](https://docs.github.com/en/rest/authentication/permissions-required-for-fine-grained-personal-access-tokens) · [Managing PATs](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) (acesso **AAAA-MM-DD ~08:38 BRT**)
 
 - [ ] System props GA: `deployable` = storage record ativo · `deployed` = deployment record ativo (linked artifacts)
 - [ ] Search/list org: `deployable:true` · `deployed:true` (Repositories page); ≠ `props.*` custom
@@ -971,10 +970,10 @@ Fontes: [Changelog deployable/deployed GA](https://github.blog/changelog/2026-04
 - [ ] Gaps FG reconfirmados inalterados; cap 50 (~08:38); AGH 0.107.79 / b.90 / 1.0.0-a.69; Hostlists 71/64 (49/51/56/70 agressivas Guard; `deprecated: false`); tag v0.107.80 **ausente** (`git ls-remote`; CDN ainda 0.107.79); path CDN = `adguardhome/`
 
 
-## AY. Push rulesets + bypass actors + enforcement / layering (2026-09-28)
+## AY. Push rulesets + bypass actors + enforcement / layering (AAAA-MM-DD)
 
-**Nota:** `notes/2026-09-28-10-github-push-rulesets-bypass-actors-enforcement.md`  
-Fontes: [About rulesets](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/about-rulesets) · [Creating rulesets](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/creating-rulesets-for-a-repository) · [Available rules](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/available-rules-for-rulesets) · [Org rulesets](https://docs.github.com/en/organizations/managing-organization-settings/creating-rulesets-for-repositories-in-your-organization) · [REST repos rules](https://docs.github.com/en/rest/repos/rules) · [FG permissions](https://docs.github.com/en/rest/authentication/permissions-required-for-fine-grained-personal-access-tokens) · [Managing PATs](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) (acesso **2026-09-28 ~09:49 BRT**)
+**Nota:** `notes/<nota>.md`  
+Fontes: [About rulesets](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/about-rulesets) · [Creating rulesets](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/creating-rulesets-for-a-repository) · [Available rules](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/available-rules-for-rulesets) · [Org rulesets](https://docs.github.com/en/organizations/managing-organization-settings/creating-rulesets-for-repositories-in-your-organization) · [REST repos rules](https://docs.github.com/en/rest/repos/rules) · [FG permissions](https://docs.github.com/en/rest/authentication/permissions-required-for-fine-grained-personal-access-tokens) · [Managing PATs](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) (acesso **AAAA-MM-DD ~09:49 BRT**)
 
 - [ ] Caps: **75** rulesets/repo · **75** org-wide (Team/Enterprise)
 - [ ] Push ruleset: private/internal + **fork network**; sem branch targeting; bypass só do **root**
@@ -993,10 +992,10 @@ Fontes: [About rulesets](https://docs.github.com/en/repositories/configuring-bra
 - [ ] Gaps FG reconfirmados inalterados; cap 50 (~09:49); AGH 0.107.79 / b.90 / 1.0.0-a.69; Hostlists 71/64 (49/51/56/70 agressivas Guard; `deprecated: false`); tag v0.107.80 **ausente** (`git ls-remote`; CDN ainda 0.107.79); path CDN = `adguardhome/`
 
 
-## AZ. Ruleset recipes / JSON import-export + Rule Insights / evaluate (2026-09-28)
+## AZ. Ruleset recipes / JSON import-export + Rule Insights / evaluate (AAAA-MM-DD)
 
-**Nota:** `notes/2026-09-28-11-github-ruleset-recipes-json-import-rule-insights.md`  
-Fontes: [Managing rulesets repo](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/managing-rulesets-for-a-repository) · [Managing GHEC](https://docs.github.com/en/enterprise-cloud@latest/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/managing-rulesets-for-a-repository) · [Managing org](https://docs.github.com/en/organizations/managing-organization-settings/managing-rulesets-for-repositories-in-your-organization) · [About free](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/about-rulesets) · [About GHEC](https://docs.github.com/en/enterprise-cloud@latest/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/about-rulesets) · [REST rule-suites](https://docs.github.com/en/rest/repos/rule-suites) · [FG permissions](https://docs.github.com/en/rest/authentication/permissions-required-for-fine-grained-personal-access-tokens) · [Managing PATs](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) · [github/ruleset-recipes](https://github.com/github/ruleset-recipes) (acesso **2026-09-28 ~10:55 BRT**)
+**Nota:** `notes/<nota>.md`  
+Fontes: [Managing rulesets repo](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/managing-rulesets-for-a-repository) · [Managing GHEC](https://docs.github.com/en/enterprise-cloud@latest/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/managing-rulesets-for-a-repository) · [Managing org](https://docs.github.com/en/organizations/managing-organization-settings/managing-rulesets-for-repositories-in-your-organization) · [About free](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/about-rulesets) · [About GHEC](https://docs.github.com/en/enterprise-cloud@latest/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/about-rulesets) · [REST rule-suites](https://docs.github.com/en/rest/repos/rule-suites) · [FG permissions](https://docs.github.com/en/rest/authentication/permissions-required-for-fine-grained-personal-access-tokens) · [Managing PATs](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) · [github/ruleset-recipes](https://github.com/github/ruleset-recipes) (acesso **AAAA-MM-DD ~10:55 BRT**)
 
 - [ ] Import: Settings → Rules → Rulesets → New → **Import a ruleset** (repo/org) — **UI, sem PAT**
 - [ ] Export/history (GHEC DOC): History 180d · Compare/Restore/Download; **bypass list excluída** do JSON

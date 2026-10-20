@@ -1,11 +1,11 @@
 # REGRA-VERIFICACAO-HUMANA
 
-Regra de supervisão humana do Meridian. Escrita por Bruno, para Bruno.
+Regra de supervisão humana do Meridian. Escrita por o dono, para o dono.
 Complementa state/REGRA-VERIFICACAO.md (anti-fantasma para o agente) com a camada que só um humano pode fazer: julgar se o output é real.
 
 ## Por que existe
 
-A REGRA-VERIFICACAO impede o Meridian de inventar. Mas um sistema que só relata falha com honestidade ainda pode ser inútil: falha honesta não é entrega. Esta regra define quando e como o Bruno verifica se o Meridian produziu algo verificável de verdade.
+A REGRA-VERIFICACAO impede o Meridian de inventar. Mas um sistema que só relata falha com honestidade ainda pode ser inútil: falha honesta não é entrega. Esta regra define quando e como o dono verifica se o Meridian produziu algo verificável de verdade.
 
 ## Checklist diário (5 minutos)
 
@@ -30,4 +30,3 @@ Se o checklist inteiro passar e a resposta da pergunta 5 for "só se organizou" 
 
 ## Histórico
 
-- 2026-10-19: criada após auditoria completa do Meridian. Primeiro checklist: pico falhou na leitura, eval falhou nos destilados, logs-watch sem Vercel, cap noite sem snapshot.

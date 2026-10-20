@@ -13,7 +13,7 @@ echo "[$(date -Iseconds)] pico-fallback: iniciando" >> "$REPORT"
 if [[ -d "$REPO_DIR/.git" ]]; then
   git -C "$REPO_DIR" pull --ff-only >> "$REPORT" 2>&1 || true
 else
-  git clone --depth 1 https://github.com/brunobpotencia/nexo-mobile-ops.git "$REPO_DIR" >> "$REPORT" 2>&1 || {
+  git clone --depth 1 https://github.com/<OWNER>/<REPO>.git "$REPO_DIR" >> "$REPORT" 2>&1 || {
     echo "[$(date -Iseconds)] FALHA: clone local impossível" >> "$REPORT"
     exit 1
   }

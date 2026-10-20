@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# netmon.sh — monitor de rede SOMENTE LEITURA do Nexo (box nexo-box + dispositivo Android + Wi-Fi de casa).
+# netmon.sh — monitor de rede SOMENTE LEITURA do Nexo (box servidor + dispositivo Android + Wi-Fi de casa).
 # Saída vazia = tudo normal. Só imprime mudanças/alertas. Sai com 0; sai com 2 (e uma linha [ERRO]) se a coleta/
 # comparação falhar ou se não der para gravar o estado com segurança — nesse caso baseline.json/state/* NÃO são tocados.
 # Toda gravação de estado é atômica: temporário no mesmo diretório -> jq rc 0 -> JSON objeto válido e não vazio -> mv.
@@ -16,19 +16,19 @@ set -u -o pipefail
 umask 077
 export LC_ALL=C
 
-BASE="/home/box/agent-data/nexo/ops/netmon"
+BASE="${NEXO_OPS:-$HOME/nexo/ops}/netmon"
 BASELINE="$BASE/baseline.json"
 STATE="$BASE/state"
 LAST="$STATE/last.json"
 LOGDIR="$BASE/logs"
-SECRET_FILE="/home/box/agent-data/nexo/ops/secrets/adguard-admin.txt"
-GUARD_SCRIPT="/home/box/agent-data/nexo/ops/nexo-ts-guard.sh"
-TS_SOCK="/home/box/.local/run/vpnd.sock"
+SECRET_FILE="${NEXO_OPS:-$HOME/nexo/ops}/secrets/adguard-admin.txt"
+GUARD_SCRIPT="${NEXO_OPS:-$HOME/nexo/ops}/nexo-ts-guard.sh"
+TS_SOCK="$HOME/.local/run/vpnd.sock"
 BOX_IP="${VPN_IP_PC:-<VPN_IP_PC>}"
-BOX_NAME="nexo-box"
+BOX_NAME="servidor"
 AGH_URL="http://$BOX_IP:3000"
 ANDROID_IP="${VPN_IP_ANDROID:-<VPN_IP_ANDROID>}"
-ANDROID_KEY="/home/box/.ssh/nexo_box_to_android"
+ANDROID_KEY="$HOME/.ssh/id_ed25519_android"
 ANDROID_PEER="android-device"
 
 REBASE=0; VERBOSE=0; JSON=0
@@ -194,7 +194,7 @@ agh_get() { # $1 = caminho; saída JSON em stdout; rc != 0 em falha
 
 collect_adguard_api() {
   # stats e querylog vão direto para arquivos e entram no jq com --slurpfile: o querylog passa fácil do limite
-  # de 128 KB por argumento (MAX_ARG_STRLEN), que derrubou o --argjson em 04/10/2026.
+  # de 128 KB por argumento (MAX_ARG_STRLEN), que derrubou o --argjson em DD/MM/AAAA.
   if ! agh_get /control/stats >"$TMP/agh_stats.json" || ! valid_json_file "$TMP/agh_stats.json"; then
     jq -n --arg e "stats: $(head -c 200 "$TMP/curl.err" | tr '\n' ' ')" '{ok:false,error:$e}'; return
   fi

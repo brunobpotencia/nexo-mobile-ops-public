@@ -10,7 +10,7 @@
 - Dismiss stale pull request approvals when new commits are pushed
 - Require status checks to pass before merging (CI: validate.sh)
 - Do not allow bypassing the above settings
-- Restrict who can push to matching branches: brunobpotencia only
+- Restrict who can push to matching branches: <OWNER> only
 
 ## Why
 - Prevents direct push to main without review
