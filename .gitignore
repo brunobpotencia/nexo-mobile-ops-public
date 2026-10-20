@@ -1,0 +1,10 @@
+# nunca versionar segredos
+.cursor/
+.env
+*.env
+secrets/
+*.key
+id_*
+!*.pub
+*.pem
+*.txt.secret

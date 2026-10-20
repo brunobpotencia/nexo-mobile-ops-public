@@ -1,0 +1,9 @@
+// Política mínima de exemplo para a VPN (formato hujson). Substitua os placeholders.
+{
+	"grants": [
+		// dispositivo Android -> resolvedor DNS no PC/servidor: DNS e painel
+		{"src": ["<VPN_IP_ANDROID>"], "dst": ["<VPN_IP_PC>"], "ip": ["udp:53", "tcp:53", "tcp:3000", "icmp:*"]},
+		// PC/servidor -> dispositivo Android: SSH
+		{"src": ["<VPN_IP_PC>"], "dst": ["<VPN_IP_ANDROID>"], "ip": ["tcp:<SSH_PORT_ANDROID>", "icmp:*"]},
+	],
+}

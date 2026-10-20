@@ -1,0 +1,9 @@
+#!/bin/bash
+# pre-push hook: blocks direct pushes to main
+protected_branch='main'
+current_branch=$(git symbolic-ref HEAD | sed -e 's,.*/\(.*\),\1,')
+if [ "x$protected_branch" = "x$current_branch" ]; then
+  echo "Direct push to $protected_branch is blocked. Use a PR."
+  exit 1
+fi
+exit 0

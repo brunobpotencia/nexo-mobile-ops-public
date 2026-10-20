@@ -1,0 +1,11 @@
+title = "Meridian gitleaks config"
+
+[extend]
+useDefault = true
+
+[allowlist]
+paths = [
+  '''.env.example''',
+  '''README.md''',
+  '''**/*.md''',
+]
