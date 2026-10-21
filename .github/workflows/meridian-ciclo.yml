@@ -1,0 +1,35 @@
+name: meridian-ciclo
+on:
+  workflow_dispatch:
+    inputs:
+      fonte:
+        description: 'Número da fonte (1-16)'
+        required: true
+        type: string
+permissions:
+  contents: read
+concurrency:
+  group: meridian-ciclo
+  cancel-in-progress: false
+jobs:
+  registrar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validar fonte
+        env:
+          FONTE: ${{ inputs.fonte }}
+        run: |
+          [[ "$FONTE" =~ ^[0-9]+$ ]] || { echo "fonte inválida"; exit 1; }
+          grep -qE "^${FONTE}\. https://" state/fontes.md || { echo "fonte $FONTE não está em state/fontes.md"; exit 1; }
+      - name: Registrar evento (sem chamada ao Grok)
+        env:
+          FONTE: ${{ inputs.fonte }}
+          RUN_ID: ${{ github.run_id }}
+        run: |
+          TS=$(TZ=America/Sao_Paulo date '+%Y-%m-%d %H:%M BRT')
+          SHA=$(git rev-parse --short HEAD)
+          LINE=$(printf '{"ts":"%s","tipo":"check","automacao":"ciclo-painel","fonte":%s,"tokens":0,"origem_medicao":"workflow GitHub Actions sem chamada ao Grok","commit":"%s","run_id":%s}' "$TS" "$FONTE" "$SHA" "$RUN_ID")
+          echo "$LINE"
+          { echo '### Evento meridian-ciclo'; echo '```json'; echo "$LINE"; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
